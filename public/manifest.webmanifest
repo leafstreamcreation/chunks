@@ -1,0 +1,8 @@
+{
+    "name": "R4-T10N",
+    "short_name": "R4-T10N",
+    "scope": "/",
+    "start_url": "/index.html",
+    "display": "standalone",
+    "background_color": "red"
+  }
