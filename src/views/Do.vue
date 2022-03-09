@@ -118,6 +118,7 @@ function updateActivity(id) {
     (v) => v.id === id
   );
   state.activities[state.cycleIndex][activityIndex].name = name;
+  if (state.cycleIndex === state.runningActivity.group && id === state.runningActivity.id) state.runningActivity.name = name;
   clearSelected();
 }
 function changeNewActivityText({ target }) {
@@ -129,22 +130,19 @@ function addHistoryRecord() {
   const index = state.activities[activity.group].findIndex(
     (v) => v.id === activity.id
   );
-  console.log(state.activities[activity.group][index]);
   if (!state.runStarted) {
-    //push a new start date onto the latest history
+    //TODO:
     console.log("update selectedActivity with new start date");
     state.activities[activity.group][index].history.push({
       startDate: new Date(),
     });
-    console.log(state.activities[activity.group][index]);
     state.runStarted = true;
   } else {
-    //define the end date
+    //TODO:
     console.log("update selectedActivity with new end date");
     const interval = state.activities[activity.group][index].history.pop();
     interval.endDate = new Date();
     state.activities[activity.group][index].history.push(interval);
-    console.log(state.activities[activity.group][index]);
     state.runStarted = false;
   }
 }

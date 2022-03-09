@@ -1,5 +1,5 @@
 <script setup>
-import Shuffler from "../../utilities/Shuffler";
+// import Shuffler from "../../utilities/Shuffler";
 
 const props = defineProps({
   activities: {
