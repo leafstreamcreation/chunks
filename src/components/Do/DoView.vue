@@ -14,7 +14,7 @@ const props = defineProps({
 const emit = defineEmits(["activitySelected"]);
 
 function selectActivity() {
-  emit("activitySelected", props.activities[1]);
+  emit("activitySelected", props.activities[1] || {});
 }
 </script>
 

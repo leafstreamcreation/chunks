@@ -96,6 +96,7 @@ function deleteActivity(id) {
   const activityIndex = state.activities[state.cycleIndex].findIndex(
     (v) => v.id === id
   );
+  if (state.cycleIndex === state.runningActivity.group && id === state.runningActivity.id) state.runningActivity = {};
   state.activities[state.cycleIndex].splice(activityIndex, 1);
   clearSelected();
 }
