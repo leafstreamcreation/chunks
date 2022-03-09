@@ -1,30 +1,32 @@
 <script setup>
-defineProps({
+import Shuffler from "../../utilities/Shuffler";
+
+const props = defineProps({
   activities: {
     type: Object,
-    required: true
+    required: true,
   },
   runningActivity: {
-      type: Object,
-      required: true
-  }
+    type: Object,
+    required: true,
+  },
 });
-defineEmits(['activitySelected']);
+const emit = defineEmits(["activitySelected"]);
+
+function selectActivity() {
+  emit("activitySelected", props.activities[1]);
+}
 </script>
 
 <template>
-  <div @click="$emit('activitySelected', activities[0])">
-  somewhere here we need to be able to view activities:
-      shuffled
-      by time spent
-      by least to most recent
-
-      start and stop activities here
+  <div @click="selectActivity">
+    somewhere here we need to be able to view activities: shuffled by time spent
+    by least to most recent start and stop activities here
   </div>
 </template>
 
 <style scoped>
 div {
-    background-color: gold;
+  background-color: gold;
 }
 </style>

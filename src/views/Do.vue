@@ -1,10 +1,11 @@
 <script setup>
-import { reactive, computed, onMounted } from 'vue';
-import { keyBy } from 'lodash';
-import DoView from '../components/Do/DoView.vue';
+import { reactive, computed, onMounted } from "vue";
+import { keyBy } from "lodash";
+import DoView from "../components/Do/DoView.vue";
 
-const state = reactive({ 
+const state = reactive({
   runningActivity: {},
+  runStarted: false,
   cycleIndex: 0,
   activities: [[]],
   editingActivities: false,
@@ -14,21 +15,25 @@ const state = reactive({
 const currentView = computed(() => {
   //values store labels/ url parts for backend calls, etc
   //for each view option: alone, together, nothing
-  const values = [
-    "Alone",
-    "Together",
-    "Nothing",
-  ];
+  const values = ["Alone", "Together", "Nothing"];
   return values[state.cycleIndex];
 });
 const currentActivities = computed(() => {
-  const deproxiedActivities = Object.values(state.activities[state.cycleIndex]).map((innerProxy) => {
-    const { id, name, history } = innerProxy;
+  const deproxiedActivities = Object.values(
+    state.activities[state.cycleIndex]
+  ).map((innerProxy) => {
+    const { id, name, history, group } = innerProxy;
     const historyDeproxy = Object.values(history).map((innerInnerProxy) => {
       const { startDate, endDate } = innerInnerProxy;
       return { startDate, endDate };
     });
-    return { id, name, history:historyDeproxy };
+    const activity = { id, name, history: historyDeproxy, group };
+    const latestHistory = historyDeproxy[historyDeproxy.length - 1];
+    if (latestHistory && !latestHistory.endDate) {
+      state.runningActivity = activity;
+      state.runStarted = true;
+    }
+    return activity;
   });
   return keyBy(deproxiedActivities, "id");
 });
@@ -39,10 +44,29 @@ onMounted(() => {
   const start2 = new Date(Date.now() - 120000);
   const end2 = start1;
   const response = [
-    [{ id: 1, name: "Code Rulebreaker", history: [{ startDate: start1, endDate: end1}] }],
+    [
+      {
+        id: 1,
+        name: "Code Rulebreaker",
+        history: [{ startDate: start1, endDate: end1 }],
+      },
+    ],
     [{ id: 1, name: "Funnel Chloe", history: [] }],
-    [{ id: 1, name: "Sit Outside", history: [{ startDate: start2, endDate: end2 }] }],
+    [
+      {
+        id: 1,
+        name: "Sit Outside",
+        history: [{ startDate: start2, endDate: end2 }],
+      },
+    ],
   ];
+  let index = 0;
+  for (const array of response) {
+    array.forEach((activity) => {
+      activity.group = index;
+    });
+    index += 1;
+  }
   console.log("Load activities: ", response);
   state.activities = response;
 });
@@ -53,6 +77,8 @@ function cycleViewIndex() {
   clearSelected();
 }
 function updateCurrentActivity(activity) {
+  if (state.runStarted && activity !== state.runningActivity)
+    addHistoryRecord();
   state.runningActivity = activity !== state.runningActivity ? activity : {};
 }
 function selectActivity(id) {
@@ -67,7 +93,9 @@ function clearSelected() {
 function deleteActivity(id) {
   //TODO:
   console.log("Delete activity of current activity set: ", id);
-  const activityIndex = state.activities[state.cycleIndex].findIndex((v) => v.id === id);
+  const activityIndex = state.activities[state.cycleIndex].findIndex(
+    (v) => v.id === id
+  );
   state.activities[state.cycleIndex].splice(activityIndex, 1);
   clearSelected();
 }
@@ -75,7 +103,7 @@ function createActivity() {
   //TODO:
   console.log("Create activity: ", state.nameInProgress);
   const id = state.activities[state.cycleIndex].length + 1;
-  
+
   const name = state.nameInProgress;
   const history = [];
   state.activities[state.cycleIndex].push({ id, name, history });
@@ -86,36 +114,87 @@ function updateActivity(id) {
   console.log(`Update activity: ${id} is now ${state.nameInProgress}`);
   const name = state.nameInProgress;
 
-  const activityIndex = state.activities[state.cycleIndex].findIndex((v) => v.id === id);
+  const activityIndex = state.activities[state.cycleIndex].findIndex(
+    (v) => v.id === id
+  );
   state.activities[state.cycleIndex][activityIndex].name = name;
   clearSelected();
 }
-function changeNewActivityText({target}) {
+function changeNewActivityText({ target }) {
   state.nameInProgress = target.value;
+}
+
+function addHistoryRecord() {
+  const activity = state.runningActivity;
+  const index = state.activities[activity.group].findIndex(
+    (v) => v.id === activity.id
+  );
+  console.log(state.activities[activity.group][index]);
+  if (!state.runStarted) {
+    //push a new start date onto the latest history
+    console.log("update selectedActivity with new start date");
+    state.activities[activity.group][index].history.push({
+      startDate: new Date(),
+    });
+    console.log(state.activities[activity.group][index]);
+    state.runStarted = true;
+  } else {
+    //define the end date
+    console.log("update selectedActivity with new end date");
+    const interval = state.activities[activity.group][index].history.pop();
+    interval.endDate = new Date();
+    state.activities[activity.group][index].history.push(interval);
+    console.log(state.activities[activity.group][index]);
+    state.runStarted = false;
+  }
 }
 </script>
 
 <template>
   <div @click="clearSelected">
-    <h1 @click="cycleViewIndex">{{currentView}}</h1>
+    <h1 @click="cycleViewIndex">{{ currentView }}</h1>
     <div class="current-activity">
       <h3>Selected activity:</h3>
-      <p v-if="state.runningActivity">{{state.runningActivity?.name}}</p>
+      <div v-if="state.runningActivity.name">
+        <h4>{{ state.runningActivity.name }}</h4>
+        <div>
+          <button @click="addHistoryRecord">
+            {{ state.runStarted ? "Stop" : "Start" }}
+          </button>
+        </div>
+      </div>
     </div>
-    <DoView :activities="currentActivities" :runningActivity="state.runningActivity" @activitySelected="updateCurrentActivity"/>
+    <DoView
+      :activities="currentActivities"
+      :runningActivity="state.runningActivity"
+      @activitySelected="updateCurrentActivity"
+    />
     <div class="activity-crud">
-      <h3 @click="state.editingActivities = !state.editingActivities">My Activities</h3>
+      <h3 @click="state.editingActivities = !state.editingActivities">
+        My Activities
+      </h3>
       <div v-if="state.editingActivities">
-        <div v-for="{id, name} in currentActivities" :key="id">
+        <div v-for="{ id, name } in currentActivities" :key="id">
           <div v-if="state.selectedId === id" class="activity-index">
             <button @click.stop="deleteActivity(id)">-</button>
-            <input type="text" name="update-name" v-model="state.nameInProgress" @click.stop="" @change="updateActivity(id)">
+            <input
+              type="text"
+              name="update-name"
+              v-model="state.nameInProgress"
+              @click.stop=""
+              @change="updateActivity(id)"
+            />
             <button @click.stop="">Rename</button>
           </div>
-          <p v-else @click.stop="selectActivity(id)">{{name}}</p>
+          <p v-else @click.stop="selectActivity(id)">{{ name }}</p>
         </div>
         <div class="new-activity">
-          <input type="text" name="name" :value="state.selectedId ? '' : state.nameInProgress" @input="changeNewActivityText">
+          <input
+            type="text"
+            name="name"
+            :value="state.selectedId ? '' : state.nameInProgress"
+            @input="changeNewActivityText"
+          />
           <button @click.stop="createActivity">Add</button>
         </div>
       </div>
@@ -147,5 +226,4 @@ h1 {
   display: flex;
   flex-direction: row;
 }
-
 </style>
