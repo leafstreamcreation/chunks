@@ -1,7 +1,7 @@
 <script setup>
 defineProps({
   activities: {
-    type: [Object],
+    type: Object,
     required: true
   },
   runningActivity: {

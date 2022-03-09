@@ -1,11 +1,12 @@
 <script setup>
 import { reactive, computed, onMounted } from 'vue';
+import { keyBy } from 'lodash';
 import DoView from '../components/Do/DoView.vue';
 
 const state = reactive({ 
   runningActivity: {},
   cycleIndex: 0,
-  activities: [],
+  activities: [[]],
   editingActivities: false,
   nameInProgress: "",
   selectedId: null,
@@ -21,7 +22,15 @@ const currentView = computed(() => {
   return values[state.cycleIndex];
 });
 const currentActivities = computed(() => {
-  return state.activities[state.cycleIndex] || [];
+  const deproxiedActivities = Object.values(state.activities[state.cycleIndex]).map((innerProxy) => {
+    const { id, name, history } = innerProxy;
+    const historyDeproxy = Object.values(history).map((innerInnerProxy) => {
+      const { startDate, endDate } = innerInnerProxy;
+      return { startDate, endDate };
+    });
+    return { id, name, history:historyDeproxy };
+  });
+  return keyBy(deproxiedActivities, "id");
 });
 
 onMounted(() => {
@@ -30,9 +39,9 @@ onMounted(() => {
   const start2 = new Date(Date.now() - 120000);
   const end2 = start1;
   const response = [
-    [{ id: 1, name: "Code Rulebreaker", history: [{start1, end1}] }],
+    [{ id: 1, name: "Code Rulebreaker", history: [{ startDate: start1, endDate: end1}] }],
     [{ id: 1, name: "Funnel Chloe", history: [] }],
-    [{ id: 1, name: "Sit Outside", history: [{start2, end2}] }],
+    [{ id: 1, name: "Sit Outside", history: [{ startDate: start2, endDate: end2 }] }],
   ];
   console.log("Load activities: ", response);
   state.activities = response;
@@ -40,30 +49,49 @@ onMounted(() => {
 
 function cycleViewIndex() {
   state.cycleIndex = state.cycleIndex < 2 ? state.cycleIndex + 1 : 0;
+  state.editingActivities = false;
+  clearSelected();
 }
 function updateCurrentActivity(activity) {
   state.runningActivity = activity !== state.runningActivity ? activity : {};
 }
 function selectActivity(id) {
   state.selectedId = state.selectedId !== id ? id : null;
-  const [ thisActivity ] = currentActivities.value.filter((activity) => activity.id === id);
-  state.nameInProgress = thisActivity.name;
+  const thisActivity = currentActivities.value[id];
+  state.nameInProgress = state.selectedId ? thisActivity.name : "";
 }
 function clearSelected() {
   state.nameInProgress = "";
   state.selectedId = null;
 }
 function deleteActivity(id) {
+  //TODO:
   console.log("Delete activity of current activity set: ", id);
+  const activityIndex = state.activities[state.cycleIndex].findIndex((v) => v.id === id);
+  state.activities[state.cycleIndex].splice(activityIndex, 1);
   clearSelected();
 }
 function createActivity() {
+  //TODO:
   console.log("Create activity: ", state.nameInProgress);
+  const id = state.activities[state.cycleIndex].length + 1;
+  
+  const name = state.nameInProgress;
+  const history = [];
+  state.activities[state.cycleIndex].push({ id, name, history });
   clearSelected();
 }
 function updateActivity(id) {
+  //TODO:
   console.log(`Update activity: ${id} is now ${state.nameInProgress}`);
+  const name = state.nameInProgress;
+
+  const activityIndex = state.activities[state.cycleIndex].findIndex((v) => v.id === id);
+  state.activities[state.cycleIndex][activityIndex].name = name;
   clearSelected();
+}
+function changeNewActivityText({target}) {
+  state.nameInProgress = target.value;
 }
 </script>
 
@@ -87,7 +115,7 @@ function updateActivity(id) {
           <p v-else @click.stop="selectActivity(id)">{{name}}</p>
         </div>
         <div class="new-activity">
-          <input type="text" name="name" v-model="state.nameInProgress">
+          <input type="text" name="name" :value="state.selectedId ? '' : state.nameInProgress" @input="changeNewActivityText">
           <button @click.stop="createActivity">Add</button>
         </div>
       </div>
