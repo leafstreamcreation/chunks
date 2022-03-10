@@ -78,11 +78,9 @@ function cycleViewIndex() {
   clearSelected();
 }
 function updateCurrentActivity(activity) {
-  console.log(activity, state.runningActivity);
   if (state.runStarted && activity !== state.runningActivity)
     addHistoryRecord();
   state.runningActivity = activity !== state.runningActivity ? activity : {};
-  console.log(state.runningActivity);
 }
 function selectActivity(id) {
   state.selectedId = state.selectedId !== id ? id : null;

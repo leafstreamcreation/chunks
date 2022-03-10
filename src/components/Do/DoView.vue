@@ -69,6 +69,9 @@ function nextSuggestion() {
       state.suggestionIndex < maxIndex ? state.suggestionIndex + 1 : maxIndex;
   }
 }
+watch(props, () => {
+  refreshSuggestions();
+});
 
 function refreshSuggestions() {
   state.suggestionIndex = 0;
