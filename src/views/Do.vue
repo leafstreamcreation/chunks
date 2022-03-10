@@ -68,6 +68,7 @@ onMounted(() => {
     });
     index += 1;
   }
+  fetch("foo");
   console.log("Load activities: ", response);
   state.activities = response;
 });
@@ -93,6 +94,7 @@ function clearSelected() {
 }
 function deleteActivity(id) {
   //TODO:
+  fetch("foo");
   console.log("Delete activity of current activity set: ", id);
   const activityIndex = state.activities[state.cycleIndex].findIndex(
     (v) => v.id === id
@@ -107,6 +109,7 @@ function deleteActivity(id) {
 }
 function createActivity() {
   //TODO:
+  fetch("foo");
   console.log("Create activity: ", state.nameInProgress);
   const id = state.activities[state.cycleIndex].length + 1;
 
@@ -118,6 +121,7 @@ function createActivity() {
 }
 function updateActivity(id) {
   //TODO:
+  fetch("foo");
   console.log(`Update activity: ${id} is now ${state.nameInProgress}`);
   const name = state.nameInProgress;
 
@@ -143,6 +147,7 @@ function addHistoryRecord() {
   );
   if (!state.runStarted) {
     //TODO:
+    fetch("foo");
     console.log("update selectedActivity with new start date");
     state.activities[activity.group][index].history.push({
       startDate: new Date(),
@@ -150,6 +155,7 @@ function addHistoryRecord() {
     state.runStarted = true;
   } else {
     //TODO:
+    fetch("foo");
     console.log("update selectedActivity with new end date");
     const interval = state.activities[activity.group][index].history.pop();
     interval.endDate = new Date();
