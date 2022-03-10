@@ -16,6 +16,10 @@ class Shuffler {
   drawNext() {
     return this.elements.pop();
   }
+
+  values() {
+    return [...this.elements];
+  }
 }
 
 export default Shuffler;

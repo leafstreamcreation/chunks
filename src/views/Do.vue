@@ -6,6 +6,7 @@ import DoView from "../components/Do/DoView.vue";
 const state = reactive({
   runningActivity: {},
   runStarted: false,
+  activityLocked: true,
   cycleIndex: 0,
   activities: [[]],
   editingActivities: false,
@@ -77,9 +78,11 @@ function cycleViewIndex() {
   clearSelected();
 }
 function updateCurrentActivity(activity) {
+  console.log(activity, state.runningActivity);
   if (state.runStarted && activity !== state.runningActivity)
     addHistoryRecord();
   state.runningActivity = activity !== state.runningActivity ? activity : {};
+  console.log(state.runningActivity);
 }
 function selectActivity(id) {
   state.selectedId = state.selectedId !== id ? id : null;
@@ -96,7 +99,11 @@ function deleteActivity(id) {
   const activityIndex = state.activities[state.cycleIndex].findIndex(
     (v) => v.id === id
   );
-  if (state.cycleIndex === state.runningActivity.group && id === state.runningActivity.id) state.runningActivity = {};
+  if (
+    state.cycleIndex === state.runningActivity.group &&
+    id === state.runningActivity.id
+  )
+    state.runningActivity = {};
   state.activities[state.cycleIndex].splice(activityIndex, 1);
   clearSelected();
 }
@@ -107,7 +114,8 @@ function createActivity() {
 
   const name = state.nameInProgress;
   const history = [];
-  state.activities[state.cycleIndex].push({ id, name, history });
+  const group = state.cycleIndex;
+  state.activities[state.cycleIndex].push({ id, name, history, group });
   clearSelected();
 }
 function updateActivity(id) {
@@ -119,7 +127,11 @@ function updateActivity(id) {
     (v) => v.id === id
   );
   state.activities[state.cycleIndex][activityIndex].name = name;
-  if (state.cycleIndex === state.runningActivity.group && id === state.runningActivity.id) state.runningActivity.name = name;
+  if (
+    state.cycleIndex === state.runningActivity.group &&
+    id === state.runningActivity.id
+  )
+    state.runningActivity.name = name;
   clearSelected();
 }
 function changeNewActivityText({ target }) {
@@ -153,14 +165,14 @@ function addHistoryRecord() {
   <div @click="clearSelected">
     <h1 @click="cycleViewIndex">{{ currentView }}</h1>
     <div class="current-activity">
-      <h3>Selected activity:</h3>
-      <div v-if="state.runningActivity.name">
-        <h4>{{ state.runningActivity.name }}</h4>
-        <div>
-          <button @click="addHistoryRecord">
-            {{ state.runStarted ? "Stop" : "Start" }}
-          </button>
-        </div>
+      <div
+        v-if="state.runningActivity.name"
+        @click="state.activityLocked = !state.activityLocked"
+      >
+        <h3>{{ state.runningActivity.name }}</h3>
+        <button v-if="!state.activityLocked" @click="addHistoryRecord">
+          {{ state.runStarted ? "Stop" : "Start" }}
+        </button>
       </div>
     </div>
     <DoView
