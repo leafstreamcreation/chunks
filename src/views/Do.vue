@@ -2,6 +2,7 @@
 import { reactive, computed, onMounted } from "vue";
 import { keyBy } from "lodash";
 import DoView from "../components/Do/DoView.vue";
+import activityService from "../services/Activity.service";
 
 const state = reactive({
   runningActivity: {},
@@ -39,12 +40,12 @@ const currentActivities = computed(() => {
   return keyBy(deproxiedActivities, "id");
 });
 
-onMounted(() => {
+onMounted(async () => {
   const start1 = new Date(Date.now() - 60000);
   const end1 = new Date();
   const start2 = new Date(Date.now() - 120000);
   const end2 = start1;
-  const response = [
+  const seed = [
     [
       {
         id: 1,
@@ -62,15 +63,16 @@ onMounted(() => {
     ],
   ];
   let index = 0;
-  for (const array of response) {
+  for (const array of seed) {
     array.forEach((activity) => {
       activity.group = index;
     });
     index += 1;
   }
-  fetch("foo");
-  console.log("Load activities: ", response);
-  state.activities = response;
+  //TODO:
+  const data = await activityService(`index`);
+  console.log("Index successful: ", data?.url);
+  state.activities = seed;
 });
 
 function cycleViewIndex() {
@@ -78,24 +80,28 @@ function cycleViewIndex() {
   state.editingActivities = false;
   clearSelected();
 }
+
 function updateCurrentActivity(activity) {
   if (state.runStarted && activity !== state.runningActivity)
     addHistoryRecord();
   state.runningActivity = activity !== state.runningActivity ? activity : {};
 }
+
 function selectActivity(id) {
   state.selectedId = state.selectedId !== id ? id : null;
   const thisActivity = currentActivities.value[id];
   state.nameInProgress = state.selectedId ? thisActivity.name : "";
 }
+
 function clearSelected() {
   state.nameInProgress = "";
   state.selectedId = null;
 }
-function deleteActivity(id) {
+
+async function deleteActivity(id) {
   //TODO:
-  fetch("foo");
-  console.log("Delete activity of current activity set: ", id);
+  const data = await activityService(`${id}/delete`, true);
+  console.log("Delete successful: ", data?.url);
   const activityIndex = state.activities[state.cycleIndex].findIndex(
     (v) => v.id === id
   );
@@ -107,23 +113,28 @@ function deleteActivity(id) {
   state.activities[state.cycleIndex].splice(activityIndex, 1);
   clearSelected();
 }
-function createActivity() {
-  //TODO:
-  fetch("foo");
-  console.log("Create activity: ", state.nameInProgress);
-  const id = state.activities[state.cycleIndex].length + 1;
 
+async function createActivity() {
+  //TODO:
   const name = state.nameInProgress;
-  const history = [];
   const group = state.cycleIndex;
+
+  const data = await activityService(`create`, true, { name, group });
+  console.log("Create successful: ", data?.url);
+
+  const id = state.activities[state.cycleIndex].length + 1;
+  const history = [];
+
   state.activities[state.cycleIndex].push({ id, name, history, group });
   clearSelected();
 }
-function updateActivity(id) {
+
+async function updateActivity(id) {
   //TODO:
-  fetch("foo");
-  console.log(`Update activity: ${id} is now ${state.nameInProgress}`);
   const name = state.nameInProgress;
+
+  const data = await activityService(`${id}/update`, true, { name });
+  console.log("Update name successful: ", data?.url);
 
   const activityIndex = state.activities[state.cycleIndex].findIndex(
     (v) => v.id === id
@@ -136,27 +147,32 @@ function updateActivity(id) {
     state.runningActivity.name = name;
   clearSelected();
 }
+
 function changeNewActivityText({ target }) {
   state.nameInProgress = target.value;
 }
 
-function addHistoryRecord() {
+async function addHistoryRecord() {
   const activity = state.runningActivity;
   const index = state.activities[activity.group].findIndex(
     (v) => v.id === activity.id
   );
   if (!state.runStarted) {
     //TODO:
-    fetch("foo");
-    console.log("update selectedActivity with new start date");
+    const data = await activityService(`${activity.id}/update`, true, {
+      startDate: new Date(),
+    });
+    console.log("Update startTime successful: ", data?.url);
     state.activities[activity.group][index].history.push({
       startDate: new Date(),
     });
     state.runStarted = true;
   } else {
     //TODO:
-    fetch("foo");
-    console.log("update selectedActivity with new end date");
+    const data = await activityService(`${activity.id}/update`, true, {
+      endDate: new Date(),
+    });
+    console.log("Update endTime successful: ", data?.url);
     const interval = state.activities[activity.group][index].history.pop();
     interval.endDate = new Date();
     state.activities[activity.group][index].history.push(interval);
