@@ -6,7 +6,14 @@ export default async function activityService(
   body = null
 ) {
   const fullPath = [baseURL, "/activity/", path].join("");
-  const res = await fetch(fullPath).catch((error) => {
+  const init = {};
+  init.method = post ? "POST" : "GET";
+  if (body) {
+    const encoder = new TextEncoder();
+    const data = encoder.encode(JSON.stringify(body));
+    init.body = data;
+  }
+  const res = await fetch(fullPath, init).catch((error) => {
     console.log(error);
   });
   return res.json();
