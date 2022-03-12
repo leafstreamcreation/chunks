@@ -10,9 +10,9 @@ export default async function activityService(
   init.method = post ? "POST" : "GET";
   if (body) {
     const encoder = new TextEncoder();
-    const data = encoder.encode(JSON.stringify(body));
-    init.body = data;
+    init.body = encoder.encode(JSON.stringify(body));
   }
+  console.log(init);
   const res = await fetch(fullPath, init).catch((error) => {
     console.log(error);
   });

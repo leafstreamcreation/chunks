@@ -4,19 +4,43 @@ const textDecoder = new TextDecoder();
 self.addEventListener("fetch", (event) => {
   const url = event.request.url;
   if (url.startsWith("https://remote-storage-name.herokuapp.com/activity/")) {
+    console.log("hasBody? ", event.request);
     if (url.endsWith("delete")) {
       const id = url.slice(51).split("/")[0];
-      console.log("delete requested", id);
+      event.respondWith(deleteHandler(id));
     } else if (url.endsWith("index")) {
-      console.log("index requested");
+      event.respondWith(indexHandler());
     } else if (url.endsWith("update")) {
       const id = url.slice(51).split("/")[0];
-      const body = parseBody(event.request);
-      console.log("update requested", id, body);
+      event.respondWith(updateHandler(id, event.request));
     } else if (url.endsWith("create")) {
-      const body = parseBody(event.request);
-      console.log("create requested", body);
+      event.respondWith(createHandler(event.request));
     } else console.log("CTD: Route does not exist");
+  }
+  
+  async function createHandler(request) {
+    const body = await request.clone().json();
+    console.log("create requested", body);
+    return Promise.resolve(response());
+  }
+  
+  async function indexHandler() {
+    console.log("index requested");
+    return Promise.resolve(response());
+  }
+
+  async function updateHandler(id, request) {
+    const body = await request.clone().json();
+    console.log("update requested", id, body);
+    return Promise.resolve(response());
+  }
+
+  async function deleteHandler(id) {
+    console.log("delete requested", id);
+    return Promise.resolve(response());
+  }
+  
+  function response() {
     const buffer = textEncoder.encode(`{ "url": "${url}" }`);
     const response = new Response(buffer, {
       headers: {
@@ -26,18 +50,6 @@ self.addEventListener("fetch", (event) => {
       status: 200,
       statusText: "OK",
     });
-    event.respondWith(response);
-    // const wait = new Promise((resolve) => { setTimeout(resolve, 1000, response) }).then((res) => {
-    //     console.log(event.request.method, url);
-    //     event.respondWith(res);
-    // });
-    // event.waitUntil(wait);
-  }
-
-  function parseBody(request) {
-    const { body } = request;
-    console.log(body);
-    if (!body) return null;
-    return body ? JSON.parse(textDecoder.decode(body)) : null;
+    return response;
   }
 });
