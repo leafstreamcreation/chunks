@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "dotenv": "^16.0.0",
+    "localforage": "^1.10.0",
     "lodash": "^4.17.21",
     "vue": "^3.2.31",
     "vue-router": "^4.0.12"
