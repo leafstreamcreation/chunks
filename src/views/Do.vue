@@ -9,7 +9,7 @@ const state = reactive({
   runStarted: false,
   activityLocked: true,
   cycleIndex: 0,
-  activities: [[]],
+  activities: [[], [], []],
   editingActivities: false,
   nameInProgress: "",
   selectedId: null,
@@ -31,7 +31,7 @@ const currentActivities = computed(() => {
     });
     const activity = { id, name, history: historyDeproxy, group };
     const latestHistory = historyDeproxy[historyDeproxy.length - 1];
-    if (latestHistory && !latestHistory.endDate) {
+    if (latestHistory?.startDate && !latestHistory.endDate) {
       state.runningActivity = activity;
       state.runStarted = true;
     }
@@ -41,38 +41,20 @@ const currentActivities = computed(() => {
 });
 
 onMounted(async () => {
-  const start1 = new Date(Date.now() - 60000);
-  const end1 = new Date();
-  const start2 = new Date(Date.now() - 120000);
-  const end2 = start1;
-  const seed = [
-    [
-      {
-        id: 1,
-        name: "Code Rulebreaker",
-        history: [{ startDate: start1, endDate: end1 }],
-      },
-    ],
-    [{ id: 1, name: "Funnel Chloe", history: [] }],
-    [
-      {
-        id: 1,
-        name: "Sit Outside",
-        history: [{ startDate: start2, endDate: end2 }],
-      },
-    ],
-  ];
-  let index = 0;
-  for (const array of seed) {
-    array.forEach((activity) => {
-      activity.group = index;
-    });
-    index += 1;
+  const { activitiesByGroup } = await activityService(`index`);
+  if (activitiesByGroup.length > 0) {
+    if (activitiesByGroup.length !== 3) {
+      let nextDataIndex = 0;
+      const edgeGroups = [];
+      for (let i = 0; i < 3; i++) {
+        if (activitiesByGroup[nextDataIndex][0].group === i) {
+          edgeGroups.push(activitiesByGroup[nextDataIndex]);
+          nextDataIndex += 1;
+        } else edgeGroups.push([]);
+      }
+      state.activities = edgeGroups;
+    } else state.activities = [...activitiesByGroup];
   }
-  //TODO:
-  const data = await activityService(`index`);
-  console.log("Index successful: ", data?.url);
-  state.activities = seed;
 });
 
 function cycleViewIndex() {
@@ -99,33 +81,27 @@ function clearSelected() {
 }
 
 async function deleteActivity(id) {
-  //TODO:
-  const data = await activityService(`${id}/delete`, true);
-  console.log("Delete successful: ", data?.url);
-  const activityIndex = state.activities[state.cycleIndex].findIndex(
-    (v) => v.id === id
-  );
-  if (
-    state.cycleIndex === state.runningActivity.group &&
-    id === state.runningActivity.id
-  )
-    state.runningActivity = {};
-  state.activities[state.cycleIndex].splice(activityIndex, 1);
-  clearSelected();
+  const { activity } = await activityService(`${id}/delete`, true);
+  if (activity) {
+    const activityIndex = state.activities[state.cycleIndex].findIndex(
+      (v) => v.id === activity.id
+    );
+    if (
+      state.cycleIndex === state.runningActivity.group &&
+      activity.id === state.runningActivity.id
+    )
+      state.runningActivity = {};
+    state.activities[state.cycleIndex].splice(activityIndex, 1);
+    clearSelected();
+  }
 }
 
 async function createActivity() {
-  //TODO:
   const name = state.nameInProgress;
   const group = state.cycleIndex;
 
-  const data = await activityService(`create`, true, { name, group });
-  console.log("Create successful: ", data?.url);
-
-  const id = state.activities[state.cycleIndex].length + 1;
-  const history = [];
-
-  state.activities[state.cycleIndex].push({ id, name, history, group });
+  const { activity } = await activityService(`create`, true, { name, group });
+  if (activity) state.activities[state.cycleIndex].push(activity);
   clearSelected();
 }
 

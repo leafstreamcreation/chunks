@@ -85,8 +85,6 @@ function orderByRandom(activities) {
 
 function orderByLeastTime(activities) {
   return activities.sort((a, b) => {
-    if (a.history.length === 0) return -1;
-    if (b.history.length === 0) return 1;
     const aTime = a.history.reduce((sum, entry) => {
       if (!entry.endDate) return sum;
       const { startDate, endDate } = entry;
@@ -104,11 +102,15 @@ function orderByLeastTime(activities) {
 
 function orderByStaleness(activities) {
   return activities.sort((a, b) => {
-    if (a.history.length === 0) return -1;
-    if (b.history.length === 0) return 1;
-    const { startDate: aStart, endDate: aEnd } = a.history.at(-1);
+    const { startDate: aStart, endDate: aEnd } = a.history.at(
+      "startDate" in a.history.at(-1) ? -1 : -2
+    );
+    if (!(aStart || aEnd)) return -1;
+    const { startDate: bStart, endDate: bEnd } = b.history.at(
+      "startDate" in b.history.at(-1) ? -1 : -2
+    );
+    if (!(bStart || bEnd)) return 1;
     const aLatest = aEnd ? aEnd.getTime() : aStart.getTime();
-    const { startDate: bStart, endDate: bEnd } = b.history.at(-1);
     const bLatest = bEnd ? bEnd.getTime() : bStart.getTime();
     if (aLatest === bLatest) return 0;
     return aLatest < bLatest ? -1 : 1;
