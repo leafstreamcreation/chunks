@@ -7,6 +7,7 @@ const db = ODM();
 self.addEventListener("activate", (event) => {
   const activateHandler = async () => {
     await db.init();
+    //seed here
     return Promise.resolve();
   };
   event.waitUntil(activateHandler());
