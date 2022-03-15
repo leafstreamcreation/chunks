@@ -1,4 +1,4 @@
-self.importScripts("../node_modules/localforage/dist/localforage.js");
+// self.importScripts("../node_modules/localforage/dist/localforage.js");
 self.importScripts("/src/odm.js");
 
 const textEncoder = new TextEncoder();
