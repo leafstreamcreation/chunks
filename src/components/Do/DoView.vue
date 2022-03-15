@@ -102,13 +102,11 @@ function orderByLeastTime(activities) {
 
 function orderByStaleness(activities) {
   return activities.sort((a, b) => {
-    const { startDate: aStart, endDate: aEnd } = a.history.at(
-      "startDate" in a.history.at(-1) ? -1 : -2
-    );
+    const aSize = a.history.length;
+    const { startDate: aStart, endDate: aEnd } = a.history[ "startDate" in a.history[aSize - 1] ? aSize - 1 : aSize - 2 ];
     if (!(aStart || aEnd)) return -1;
-    const { startDate: bStart, endDate: bEnd } = b.history.at(
-      "startDate" in b.history.at(-1) ? -1 : -2
-    );
+    const bSize = b.history.length;
+    const { startDate: bStart, endDate: bEnd } = b.history[ "startDate" in b.history[bSize - 1] ? bSize - 1 : bSize - 2 ];
     if (!(bStart || bEnd)) return 1;
     const aLatest = aEnd ? aEnd.getTime() : aStart.getTime();
     const bLatest = bEnd ? bEnd.getTime() : bStart.getTime();
