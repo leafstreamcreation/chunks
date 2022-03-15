@@ -1,9 +1,11 @@
 <script setup>
-import { RouterLink, RouterView } from "vue-router";
+// import { RouterLink, RouterView } from "vue-router";
+import Do from "@/views/Do.vue";
 </script>
 
 <template>
-  <header>
+  <Do />
+  <!-- <header>
     <div class="wrapper">
       <nav>
         <RouterLink to="/Do">Do</RouterLink>
@@ -12,7 +14,7 @@ import { RouterLink, RouterView } from "vue-router";
     </div>
   </header>
 
-  <RouterView />
+  <RouterView /> -->
 </template>
 
 <style>
