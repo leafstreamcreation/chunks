@@ -5,7 +5,9 @@ const textEncoder = new TextEncoder();
 const db = ODM();
 
 self.addEventListener("install", (event) => {
-  event.waitUntil(db.init());
+  event.waitUntil(db.init().then(() => {
+    self.skipWaiting();
+  }));
 });
 
 self.addEventListener("activate", (event) => {
