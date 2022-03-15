@@ -1,8 +1,8 @@
 {
     "name": "Chunks",
     "short_name": "Chunks",
-    "scope": "/",
-    "start_url": "/index.html",
+    "scope": ".",
+    "start_url": ".",
     "display": "fullscreen",
     "background_color": "red"
   }

@@ -1,5 +1,5 @@
-// self.importScripts("../node_modules/localforage/dist/localforage.js");
-self.importScripts("/src/odm.js");
+self.importScripts("/localforage.min.js");
+self.importScripts("/odm.js");
 
 const textEncoder = new TextEncoder();
 const db = ODM();
