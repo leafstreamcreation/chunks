@@ -9,7 +9,6 @@ export default async function activityService(
   const init = {};
   init.method = post ? "POST" : "GET";
   if (body) {
-    console.log(body);
     const encoder = new TextEncoder();
     init.body = encoder.encode(JSON.stringify(body));
   }

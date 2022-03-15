@@ -42,19 +42,29 @@ const currentActivities = computed(() => {
 
 onMounted(async () => {
   const { activitiesByGroup } = await activityService(`index`);
-  if (activitiesByGroup.length > 0) {
-    if (activitiesByGroup.length !== 3) {
-      let nextDataIndex = 0;
-      const edgeGroups = [];
-      for (let i = 0; i < 3; i++) {
-        if (activitiesByGroup[nextDataIndex][0].group === i) {
-          edgeGroups.push(activitiesByGroup[nextDataIndex]);
-          nextDataIndex += 1;
-        } else edgeGroups.push([]);
-      }
-      state.activities = edgeGroups;
-    } else state.activities = [...activitiesByGroup];
+  let loadedActivities = activitiesByGroup;
+  if (activitiesByGroup.length !== 3) {
+    let nextDataIndex = 0;
+    const edgeGroups = [];
+    for (let i = 0; i < 3; i++) {
+      const dataGroup = activitiesByGroup[nextDataIndex];
+      if (dataGroup && dataGroup[0]?.group === i) {
+        edgeGroups.push(activitiesByGroup[nextDataIndex]);
+        nextDataIndex += 1;
+      } else edgeGroups.push([]);
+    }
+    loadedActivities = edgeGroups;
   }
+  loadedActivities.forEach((group) => {
+    group.forEach((activity) => {
+      activity.history.forEach((entry) => {
+        for (const key in entry) {
+          entry[key] = new Date(key);
+        }
+      });
+    });
+  });
+  state.activities = loadedActivities;
 });
 
 function cycleViewIndex() {
@@ -106,22 +116,21 @@ async function createActivity() {
 }
 
 async function updateActivity(id) {
-  //TODO:
   const name = state.nameInProgress;
 
-  const data = await activityService(`${id}/update`, true, { name });
-  console.log("Update name successful: ", data?.url);
-
-  const activityIndex = state.activities[state.cycleIndex].findIndex(
-    (v) => v.id === id
-  );
-  state.activities[state.cycleIndex][activityIndex].name = name;
-  if (
-    state.cycleIndex === state.runningActivity.group &&
-    id === state.runningActivity.id
-  )
-    state.runningActivity.name = name;
-  clearSelected();
+  const { activity } = await activityService(`${id}/update`, true, { name });
+  if (activity) {
+    const activityIndex = state.activities[state.cycleIndex].findIndex(
+      (v) => v.id === activity.id
+    );
+    state.activities[state.cycleIndex][activityIndex].name = activity.name;
+    if (
+      state.cycleIndex === state.runningActivity.group &&
+      id === state.runningActivity.id
+    )
+      state.runningActivity.name = activity.name;
+    clearSelected();
+  }
 }
 
 function changeNewActivityText({ target }) {
@@ -134,25 +143,35 @@ async function addHistoryRecord() {
     (v) => v.id === activity.id
   );
   if (!state.runStarted) {
-    //TODO:
-    const data = await activityService(`${activity.id}/update`, true, {
-      startDate: new Date(),
-    });
-    console.log("Update startTime successful: ", data?.url);
-    state.activities[activity.group][index].history.push({
-      startDate: new Date(),
-    });
-    state.runStarted = true;
+    const { activity: updatedActivity } = await activityService(
+      `${activity.id}/update`,
+      true,
+      {
+        startDate: new Date().toISOString(),
+      }
+    );
+    if (updatedActivity) {
+      const date = updatedActivity.history.at(-1).startDate;
+      state.activities[activity.group][index].history.at(-1).startDate =
+        new Date(date);
+      state.runStarted = true;
+    }
   } else {
-    //TODO:
-    const data = await activityService(`${activity.id}/update`, true, {
-      endDate: new Date(),
-    });
-    console.log("Update endTime successful: ", data?.url);
-    const interval = state.activities[activity.group][index].history.pop();
-    interval.endDate = new Date();
-    state.activities[activity.group][index].history.push(interval);
-    state.runStarted = false;
+    const { activity: updatedActivity } = await activityService(
+      `${activity.id}/update`,
+      true,
+      {
+        endDate: new Date().toISOString(),
+      }
+    );
+    if (updatedActivity) {
+      const date = updatedActivity.history.at(-1).endDate;
+      state.activities[activity.group][index].history.at(-1).endDate = new Date(
+        date
+      );
+      state.activities[activity.group][index].history.push({});
+      state.runStarted = false;
+    }
   }
 }
 </script>
