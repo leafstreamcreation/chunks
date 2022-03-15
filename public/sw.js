@@ -4,12 +4,17 @@ self.importScripts("/odm.js");
 const textEncoder = new TextEncoder();
 const db = ODM();
 
+self.addEventListener("install", (event) => {
+  event.waitUntil(db.init());
+});
+
 self.addEventListener("activate", (event) => {
-  const activateHandler = async () => {
-    await db.init();
-    return Promise.resolve();
-  };
-  event.waitUntil(activateHandler());
+  event.waitUntil(clients.claim().then(() => clients.matchAll()).then((allClients) => {
+      for (const context of allClients) {
+        context.postMessage({ ready: true });
+      }
+    })
+  );
 });
 
 self.addEventListener("fetch", (event) => {
