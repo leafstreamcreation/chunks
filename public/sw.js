@@ -5,18 +5,11 @@ const textEncoder = new TextEncoder();
 const db = ODM();
 
 self.addEventListener("install", (event) => {
-  event.waitUntil(db.init().then(() => {
-    self.skipWaiting();
-  }));
+  event.waitUntil(db.init());
 });
 
 self.addEventListener("activate", (event) => {
-  event.waitUntil(clients.claim().then(() => clients.matchAll()).then((allClients) => {
-      for (const context of allClients) {
-        context.postMessage({ ready: true });
-      }
-    })
-  );
+  event.waitUntil(clients.claim());
 });
 
 self.addEventListener("fetch", (event) => {

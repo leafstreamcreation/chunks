@@ -13,6 +13,7 @@ const state = reactive({
   editingActivities: false,
   nameInProgress: "",
   selectedId: null,
+  loaderLock: false,
 });
 const currentView = computed(() => {
   //values store labels/ url parts for backend calls, etc
@@ -40,8 +41,14 @@ const currentActivities = computed(() => {
   return keyBy(deproxiedActivities, "id");
 });
 
-onMounted(async () => {
-  const { activitiesByGroup } = await activityService(`index`);
+onMounted(loadActivities);
+
+async function loadActivities() {
+  if (state.loaderLock === true) return;
+  state.loaderLock = true;
+  const data = await activityService(`index`);
+  if (!data || !data.activitiesByGroup) return;
+  const activitiesByGroup = data.activitiesByGroup;
   let loadedActivities = activitiesByGroup;
   if (activitiesByGroup.length !== 3) {
     let nextDataIndex = 0;
@@ -65,7 +72,8 @@ onMounted(async () => {
     });
   });
   state.activities = loadedActivities;
-});
+  state.loaderLock = false;
+}
 
 function cycleViewIndex() {
   state.cycleIndex = state.cycleIndex < 2 ? state.cycleIndex + 1 : 0;
@@ -91,7 +99,9 @@ function clearSelected() {
 }
 
 async function deleteActivity(id) {
-  const { activity } = await activityService(`${id}/delete`, true);
+  const data = await activityService(`${id}/delete`, true);
+  if (!data) return loadActivities();
+  const { activity } = data;
   if (activity) {
     const activityIndex = state.activities[state.cycleIndex].findIndex(
       (v) => v.id === activity.id
@@ -110,7 +120,9 @@ async function createActivity() {
   const name = state.nameInProgress;
   const group = state.cycleIndex;
 
-  const { activity } = await activityService(`create`, true, { name, group });
+  const data = await activityService(`create`, true, { name, group });
+  if (!data) return loadActivities();
+  const { activity } = data;
   if (activity) state.activities[state.cycleIndex].push(activity);
   clearSelected();
 }
@@ -118,7 +130,9 @@ async function createActivity() {
 async function updateActivity(id) {
   const name = state.nameInProgress;
 
-  const { activity } = await activityService(`${id}/update`, true, { name });
+  const data = await activityService(`${id}/update`, true, { name });
+  if (!data) return loadActivities();
+  const { activity } = data;
   if (activity) {
     const activityIndex = state.activities[state.cycleIndex].findIndex(
       (v) => v.id === activity.id
@@ -143,13 +157,15 @@ async function addHistoryRecord() {
     (v) => v.id === activity.id
   );
   if (!state.runStarted) {
-    const { activity: updatedActivity } = await activityService(
+    const data = await activityService(
       `${activity.id}/update`,
       true,
       {
         startDate: new Date().toISOString(),
       }
     );
+    if (!data) return loadActivities();
+    const { activity: updatedActivity } = data;
     if (updatedActivity) {
       const date = updatedActivity.history.at(-1).startDate;
       state.activities[activity.group][index].history.at(-1).startDate =
@@ -157,13 +173,15 @@ async function addHistoryRecord() {
       state.runStarted = true;
     }
   } else {
-    const { activity: updatedActivity } = await activityService(
+    const data = await activityService(
       `${activity.id}/update`,
       true,
       {
         endDate: new Date().toISOString(),
       }
     );
+    if (!data) return loadActivities();
+    const { activity: updatedActivity } = data;
     if (updatedActivity) {
       const date = updatedActivity.history.at(-1).endDate;
       state.activities[activity.group][index].history.at(-1).endDate = new Date(
