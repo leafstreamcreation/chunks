@@ -160,18 +160,26 @@ function selectActivity(id) {
 </template>
 
 <style scoped>
+
+div {
+  width: 100%;
+  height: 100%;
+}
+
 .do-view {
   background-color: gold;
   display: flex;
   flex-direction: column;
   align-items: center;
   width: 100%;
+  height: 100%;
 }
 
 .options {
   display: flex;
   flex-direction: row;
   justify-content: center;
+  height: 20%;
 }
 
 .suggestions {

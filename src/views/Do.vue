@@ -195,8 +195,10 @@ async function addHistoryRecord() {
 </script>
 
 <template>
-  <div @click="clearSelected">
-    <h1 @click="cycleViewIndex">{{ currentView }}</h1>
+  <div class="do-bounds" @click="clearSelected">
+    <div class="title-switcher" @click="cycleViewIndex">
+      <h1>{{ currentView }}</h1>
+    </div>
     <div class="current-activity">
       <div
         v-if="state.runningActivity.name"
@@ -213,13 +215,22 @@ async function addHistoryRecord() {
       :runningActivity="state.runningActivity"
       @activitySelected="updateCurrentActivity"
     />
-    <div class="activity-crud">
+    <div class="management-panel">
       <h3 @click="state.editingActivities = !state.editingActivities">
-        My Activities
+        Manage
       </h3>
       <div v-if="state.editingActivities">
-        <div v-for="{ id, name } in currentActivities" :key="id">
-          <div v-if="state.selectedId === id" class="activity-index">
+        <div class="new-activity text-div">
+          <input
+            type="text"
+            name="name"
+            :value="state.selectedId ? '' : state.nameInProgress"
+            @input="changeNewActivityText"
+          />
+          <button @click.stop="createActivity">Add</button>
+        </div>
+        <div v-for="{ id, name } in currentActivities" :key="id" class="list-item">
+          <div v-if="state.selectedId === id" class="activity-index text-div">
             <button @click.stop="deleteActivity(id)">-</button>
             <input
               type="text"
@@ -232,42 +243,63 @@ async function addHistoryRecord() {
           </div>
           <p v-else @click.stop="selectActivity(id)">{{ name }}</p>
         </div>
-        <div class="new-activity">
-          <input
-            type="text"
-            name="name"
-            :value="state.selectedId ? '' : state.nameInProgress"
-            @input="changeNewActivityText"
-          />
-          <button @click.stop="createActivity">Add</button>
-        </div>
       </div>
     </div>
   </div>
 </template>
 
 <style scoped>
-h1 {
+h1, h3 {
+  text-align: center;
+}
+
+div {
+  width: 100%;
+  height: 100%;
+}
+
+.do-bounds {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.title-switcher {
   background-color: aquamarine;
+  height: 20%;
 }
 
 .current-activity {
-  font-size: 1.2rem;
   background-color: chocolate;
+  height: 15%;
 }
 
-.activity-crud {
+.management-panel {
+  height: 30%;
   background-color: darkolivegreen;
   color: white;
+  overflow-y: scroll;
+}
+
+.text-div {
+  height: 30px;
+  display: flex;
+  flex-direction: row;
+}
+
+.list-item {
+  height: 30px;
+  display: flex;
+  justify-content: center;
 }
 
 .activity-index {
   display: flex;
-  flex-direction: row;
+  justify-content: center;
 }
 
 .new-activity {
-  display: flex;
-  flex-direction: row;
+  display:flex;
+  justify-content: center;
 }
 </style>

@@ -21,9 +21,9 @@ import Do from "@/views/Do.vue";
 @import "@/assets/base.css";
 
 #app {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
+  width:100vw;
+  height: 100vh;
+  margin: 0;
 
   font-weight: normal;
 }
