@@ -168,8 +168,8 @@ async function addHistoryRecord() {
     const { activity: updatedActivity } = data;
     const latestIndex = updatedActivity.history.length - 1;
     if (updatedActivity) {
-      const date = updatedActivity[latestIndex].startDate;
-      state.activities[activity.group][index][latestIndex].startDate =
+      const date = updatedActivity.history[latestIndex].startDate;
+      state.activities[activity.group][index].history[latestIndex].startDate =
         new Date(date);
       state.runStarted = true;
     }
@@ -183,10 +183,10 @@ async function addHistoryRecord() {
     );
     if (!data) return loadActivities();
     const { activity: updatedActivity } = data;
-    const latestIndex = updatedActivity.history.length - 1;
+    const latestIndex = updatedActivity.history.length - 2;
     if (updatedActivity) {
-      const date = updatedActivity[latestIndex].endDate;
-      state.activities[activity.group][index][latestIndex].endDate = new Date(
+      const date = updatedActivity.history[latestIndex].endDate;
+      state.activities[activity.group][index].history[latestIndex].endDate = new Date(
         date
       );
       state.activities[activity.group][index].history.push({});
