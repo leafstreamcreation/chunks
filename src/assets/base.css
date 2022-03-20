@@ -59,6 +59,10 @@
   font-weight: normal;
 }
 
+html {
+  background-color: #556b2f;
+}
+
 body {
   min-height: 100vh;
   color: var(--color-text);
