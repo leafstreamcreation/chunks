@@ -268,6 +268,7 @@ div {
 
 .title-switcher {
   background-color: aquamarine;
+  color: black;
   height: 20%;
 }
 

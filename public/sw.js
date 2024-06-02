@@ -14,7 +14,7 @@ self.addEventListener("activate", (event) => {
 
 self.addEventListener("fetch", (event) => {
   const url = event.request.url;
-  if (url.startsWith("https://remote-storage-name.herokuapp.com/activity/")) {
+  if (url.startsWith("http://localhost:5051/")) {
     if (url.endsWith("delete")) {
       const id = url.slice(51).split("/")[0];
       event.respondWith(deleteActivityHandler(id));
