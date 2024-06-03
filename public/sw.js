@@ -4,6 +4,8 @@ self.importScripts("/odm.js");
 const textEncoder = new TextEncoder();
 const db = ODM();
 
+const BASE_URL_ACTIVITY = "http://localhost:5051/activity/";
+
 self.addEventListener("install", (event) => {
   event.waitUntil(db.init());
 });
@@ -14,14 +16,14 @@ self.addEventListener("activate", (event) => {
 
 self.addEventListener("fetch", (event) => {
   const url = event.request.url;
-  if (url.startsWith("http://localhost:5051/")) {
+  if (url.startsWith(BASE_URL_ACTIVITY)) {
     if (url.endsWith("delete")) {
-      const id = url.slice(31).split("/")[0];
+      const id = url.slice(BASE_URL_ACTIVITY.length).split("/")[0];
       event.respondWith(deleteActivityHandler(id));
     } else if (url.endsWith("index")) {
       event.respondWith(indexActivityHandler());
     } else if (url.endsWith("update")) {
-      const id = url.slice(31).split("/")[0];
+      const id = url.slice(BASE_URL_ACTIVITY.length).split("/")[0];
       event.respondWith(updateActivityHandler(id, event.request));
     } else if (url.endsWith("create")) {
       event.respondWith(createActivityHandler(event.request));

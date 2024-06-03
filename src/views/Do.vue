@@ -218,19 +218,19 @@ async function addHistoryRecord() {
       @activitySelected="updateCurrentActivity"
     />
     <div class="management-panel">
-      <h3 @click="state.editingActivities = !state.editingActivities">
+      <h3 :class="state.editingActivities ? 'management-title-collapsed' : 'management-title'" @click="state.editingActivities = !state.editingActivities">
         Manage
       </h3>
-      <div v-if="state.editingActivities">
-        <div class="new-activity text-div">
-          <input
-            type="text"
-            name="name"
-            :value="state.selectedId ? '' : state.nameInProgress"
-            @input="changeNewActivityText"
-          />
-          <button @click.stop="createActivity">Add</button>
-        </div>
+      <div v-if="state.editingActivities" class="new-activity text-div">
+        <input
+          type="text"
+          name="name"
+          :value="state.selectedId ? '' : state.nameInProgress"
+          @input="changeNewActivityText"
+        />
+        <button @click.stop="createActivity">Add</button>
+      </div>
+      <div v-if="state.editingActivities" class="activity-list">
         <div v-for="{ id, name } in currentActivities" :key="id" class="list-item">
           <div v-if="state.selectedId === id" class="activity-index text-div">
             <button @click.stop="deleteActivity(id)">-</button>
@@ -269,18 +269,31 @@ div {
 .title-switcher {
   background-color: aquamarine;
   color: black;
-  height: 20%;
+  height: 15%;
 }
 
 .current-activity {
   background-color: chocolate;
-  height: 15%;
+  height: 20%;
 }
 
 .management-panel {
   height: 30%;
   background-color: darkolivegreen;
   color: white;
+}
+
+.management-title {
+  height: 100%;
+  background-color: rgb(46, 59, 23);
+}
+
+.management-title-collapsed {
+  background-color: rgb(46, 59, 23);
+}
+
+.activity-list {
+  height: 50%;
   overflow-y: scroll;
 }
 
@@ -302,7 +315,7 @@ div {
 }
 
 .new-activity {
-  display:flex;
+  display: flex;
   justify-content: center;
 }
 </style>
