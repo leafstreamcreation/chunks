@@ -16,12 +16,12 @@ self.addEventListener("fetch", (event) => {
   const url = event.request.url;
   if (url.startsWith("http://localhost:5051/")) {
     if (url.endsWith("delete")) {
-      const id = url.slice(51).split("/")[0];
+      const id = url.slice(31).split("/")[0];
       event.respondWith(deleteActivityHandler(id));
     } else if (url.endsWith("index")) {
       event.respondWith(indexActivityHandler());
     } else if (url.endsWith("update")) {
-      const id = url.slice(51).split("/")[0];
+      const id = url.slice(31).split("/")[0];
       event.respondWith(updateActivityHandler(id, event.request));
     } else if (url.endsWith("create")) {
       event.respondWith(createActivityHandler(event.request));
