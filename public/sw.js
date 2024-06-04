@@ -4,7 +4,7 @@ self.importScripts("/odm.js");
 const textEncoder = new TextEncoder();
 const db = ODM();
 
-const BASE_URL_ACTIVITY = "http://localhost:5051/activity/";
+const BASE_URL_ACTIVITY = "https://localhost:5051/activity/";
 
 self.addEventListener("install", (event) => {
   event.waitUntil(db.init());
