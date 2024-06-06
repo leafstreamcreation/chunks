@@ -161,13 +161,19 @@ function selectActivity(id) {
 
 <style scoped>
 
+/* Payne's gray  #495867; */
+/* Glaucous      #577399; */
+/* Columbia blue #BDD5EA; */
+/* Ghost white   #F7F7FF; */
+/* Jasmine       #F6E27F; */
+
 div {
   width: 100%;
   height: 100%;
 }
 
 .do-view {
-  background-color: gold;
+  background-color: #495867;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -183,20 +189,21 @@ div {
 }
 
 .suggestions {
-  background-color: darkgray;
+  background-color: #495867;
   display: flex;
   flex-direction: row;
   justify-content: space-evenly;
   width: 100%;
 }
 .suggestion-item {
-  background-color: white;
+  background-color: #F6E27F;
+  color: black;
   width: 30%;
 }
 
 .options-button {
-  background-color: blueviolet;
-  color: white;
+  background-color: #F7F7FF;
+  color: black;
   text-align: center;
   margin: 2px;
   padding: 2px;

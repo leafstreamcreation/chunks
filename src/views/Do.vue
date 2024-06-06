@@ -251,6 +251,12 @@ async function addHistoryRecord() {
 </template>
 
 <style scoped>
+/* Payne's gray  #495867; */
+/* Glaucous      #577399; */
+/* Columbia blue #BDD5EA; */
+/* Ghost white   #F7F7FF; */
+/* Jasmine       #F6E27F; */
+
 h1, h3 {
   text-align: center;
 }
@@ -267,29 +273,28 @@ div {
 }
 
 .title-switcher {
-  background-color: aquamarine;
+  background-color: #BDD5EA;
   color: black;
   height: 15%;
 }
-
 .current-activity {
-  background-color: chocolate;
+  background-color: #F6E27F;
   height: 20%;
 }
 
 .management-panel {
   height: 30%;
-  background-color: darkolivegreen;
-  color: white;
+  background-color: #577399;
+  color: black;
 }
 
 .management-title {
   height: 100%;
-  background-color: rgb(46, 59, 23);
+  background-color: #BDD5EA;
 }
 
 .management-title-collapsed {
-  background-color: rgb(46, 59, 23);
+  background-color: #BDD5EA;
 }
 
 .activity-list {
@@ -305,6 +310,7 @@ div {
 
 .list-item {
   height: 30px;
+  background-color: #F6E27F;
   display: flex;
   justify-content: center;
 }
