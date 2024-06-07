@@ -1,5 +1,17 @@
 <script setup>
-import Shuffler from "../../utilities/Shuffler";
+//this component allows the user to select
+//an activity to do
+//it has three main features:
+
+//1: area with three buttons which allows the user
+//to select an activity
+
+//2: area for filtering activity choices and modifying the order
+//(normal, reverse) in which the choices appear
+
+//3: area for navigating through the activity choices
+
+import Shuffler from "../utilities/Shuffler";
 import { reactive, computed, watch } from "vue";
 
 const state = reactive({
@@ -103,10 +115,12 @@ function orderByLeastTime(activities) {
 function orderByStaleness(activities) {
   return activities.sort((a, b) => {
     const aSize = a.history.length;
-    const { startDate: aStart, endDate: aEnd } = a.history[ "startDate" in a.history[aSize - 1] ? aSize - 1 : aSize - 2 ];
+    const { startDate: aStart, endDate: aEnd } =
+      a.history["startDate" in a.history[aSize - 1] ? aSize - 1 : aSize - 2];
     if (!(aStart || aEnd)) return -1;
     const bSize = b.history.length;
-    const { startDate: bStart, endDate: bEnd } = b.history[ "startDate" in b.history[bSize - 1] ? bSize - 1 : bSize - 2 ];
+    const { startDate: bStart, endDate: bEnd } =
+      b.history["startDate" in b.history[bSize - 1] ? bSize - 1 : bSize - 2];
     if (!(bStart || bEnd)) return 1;
     const aLatest = aEnd ? aEnd.getTime() : aStart.getTime();
     const bLatest = bEnd ? bEnd.getTime() : bStart.getTime();
@@ -160,7 +174,6 @@ function selectActivity(id) {
 </template>
 
 <style scoped>
-
 /* Payne's gray  #495867; */
 /* Glaucous      #577399; */
 /* Columbia blue #BDD5EA; */
@@ -196,13 +209,13 @@ div {
   width: 100%;
 }
 .suggestion-item {
-  background-color: #F6E27F;
+  background-color: #f6e27f;
   color: black;
   width: 30%;
 }
 
 .options-button {
-  background-color: #F7F7FF;
+  background-color: #f7f7ff;
   color: black;
   text-align: center;
   margin: 2px;

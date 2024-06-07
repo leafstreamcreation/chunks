@@ -1,7 +1,7 @@
 <script setup>
 import { reactive, computed, onMounted } from "vue";
 import { keyBy } from "lodash";
-import DoView from "../components/Do/DoView.vue";
+import DoView from "../components/ActivitySelectionView.vue";
 import activityService from "../services/Activity.service";
 
 const state = reactive({
@@ -157,13 +157,9 @@ async function addHistoryRecord() {
     (v) => v.id === activity.id
   );
   if (!state.runStarted) {
-    const data = await activityService(
-      `${activity.id}/update`,
-      true,
-      {
-        startDate: new Date().toISOString(),
-      }
-    );
+    const data = await activityService(`${activity.id}/update`, true, {
+      startDate: new Date().toISOString(),
+    });
     if (!data) return loadActivities();
     const { activity: updatedActivity } = data;
     const latestIndex = updatedActivity.history.length - 1;
@@ -174,21 +170,16 @@ async function addHistoryRecord() {
       state.runStarted = true;
     }
   } else {
-    const data = await activityService(
-      `${activity.id}/update`,
-      true,
-      {
-        endDate: new Date().toISOString(),
-      }
-    );
+    const data = await activityService(`${activity.id}/update`, true, {
+      endDate: new Date().toISOString(),
+    });
     if (!data) return loadActivities();
     const { activity: updatedActivity } = data;
     const latestIndex = updatedActivity.history.length - 2;
     if (updatedActivity) {
       const date = updatedActivity.history[latestIndex].endDate;
-      state.activities[activity.group][index].history[latestIndex].endDate = new Date(
-        date
-      );
+      state.activities[activity.group][index].history[latestIndex].endDate =
+        new Date(date);
       state.activities[activity.group][index].history.push({});
       state.runStarted = false;
     }
@@ -218,7 +209,14 @@ async function addHistoryRecord() {
       @activitySelected="updateCurrentActivity"
     />
     <div class="management-panel">
-      <h3 :class="state.editingActivities ? 'management-title-collapsed' : 'management-title'" @click="state.editingActivities = !state.editingActivities">
+      <h3
+        :class="
+          state.editingActivities
+            ? 'management-title-collapsed'
+            : 'management-title'
+        "
+        @click="state.editingActivities = !state.editingActivities"
+      >
         Manage
       </h3>
       <div v-if="state.editingActivities" class="new-activity text-div">
@@ -231,7 +229,11 @@ async function addHistoryRecord() {
         <button @click.stop="createActivity">Add</button>
       </div>
       <div v-if="state.editingActivities" class="activity-list">
-        <div v-for="{ id, name } in currentActivities" :key="id" class="list-item">
+        <div
+          v-for="{ id, name } in currentActivities"
+          :key="id"
+          class="list-item"
+        >
           <div v-if="state.selectedId === id" class="activity-index text-div">
             <button @click.stop="deleteActivity(id)">-</button>
             <input
@@ -257,7 +259,8 @@ async function addHistoryRecord() {
 /* Ghost white   #F7F7FF; */
 /* Jasmine       #F6E27F; */
 
-h1, h3 {
+h1,
+h3 {
   text-align: center;
 }
 
@@ -273,12 +276,12 @@ div {
 }
 
 .title-switcher {
-  background-color: #BDD5EA;
+  background-color: #bdd5ea;
   color: black;
   height: 15%;
 }
 .current-activity {
-  background-color: #F6E27F;
+  background-color: #f6e27f;
   height: 20%;
 }
 
@@ -290,11 +293,11 @@ div {
 
 .management-title {
   height: 100%;
-  background-color: #BDD5EA;
+  background-color: #bdd5ea;
 }
 
 .management-title-collapsed {
-  background-color: #BDD5EA;
+  background-color: #bdd5ea;
 }
 
 .activity-list {
@@ -310,7 +313,7 @@ div {
 
 .list-item {
   height: 30px;
-  background-color: #F6E27F;
+  background-color: #f6e27f;
   display: flex;
   justify-content: center;
 }
