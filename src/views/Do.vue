@@ -1,29 +1,25 @@
 <script setup>
 import { reactive, computed, onMounted } from "vue";
 import { keyBy } from "lodash";
-import DoView from "../components/ActivitySelectionView.vue";
 import activityService from "../services/Activity.service";
+import ActivitySelectionView from "../components/ActivitySelectionView.vue";
+import ActivityManagementPanel from "../components/ActivityManagementPanel.vue";
+import CategoryBar from "../components/CategoryBar.vue";
 
 const state = reactive({
   runningActivity: {},
   runStarted: false,
   activityLocked: true,
-  cycleIndex: 0,
+  categoryIndex: 0,
   activities: [[], [], []],
   editingActivities: false,
   nameInProgress: "",
   selectedId: null,
   loaderLock: false,
 });
-const currentView = computed(() => {
-  //values store labels/ url parts for backend calls, etc
-  //for each view option: alone, together, nothing
-  const values = ["Alone", "Together", "Nothing"];
-  return values[state.cycleIndex];
-});
 const currentActivities = computed(() => {
   const deproxiedActivities = Object.values(
-    state.activities[state.cycleIndex]
+    state.activities[state.categoryIndex]
   ).map((innerProxy) => {
     const { id, name, history, group } = innerProxy;
     const historyDeproxy = Object.values(history).map((innerInnerProxy) => {
@@ -75,8 +71,8 @@ async function loadActivities() {
   state.loaderLock = false;
 }
 
-function cycleViewIndex() {
-  state.cycleIndex = state.cycleIndex < 2 ? state.cycleIndex + 1 : 0;
+function updateCategory(newIndex) {
+  state.categoryIndex = newIndex;
   state.editingActivities = false;
   clearSelected();
 }
@@ -103,27 +99,27 @@ async function deleteActivity(id) {
   if (!data) return loadActivities();
   const { activity } = data;
   if (activity) {
-    const activityIndex = state.activities[state.cycleIndex].findIndex(
+    const activityIndex = state.activities[state.categoryIndex].findIndex(
       (v) => v.id === activity.id
     );
     if (
-      state.cycleIndex === state.runningActivity.group &&
+      state.categoryIndex === state.runningActivity.group &&
       activity.id === state.runningActivity.id
     )
       state.runningActivity = {};
-    state.activities[state.cycleIndex].splice(activityIndex, 1);
+    state.activities[state.categoryIndex].splice(activityIndex, 1);
     clearSelected();
   }
 }
 
 async function createActivity() {
   const name = state.nameInProgress;
-  const group = state.cycleIndex;
+  const group = state.categoryIndex;
 
   const data = await activityService(`create`, true, { name, group });
   if (!data) return loadActivities();
   const { activity } = data;
-  if (activity) state.activities[state.cycleIndex].push(activity);
+  if (activity) state.activities[state.categoryIndex].push(activity);
   clearSelected();
 }
 
@@ -134,12 +130,12 @@ async function updateActivity(id) {
   if (!data) return loadActivities();
   const { activity } = data;
   if (activity) {
-    const activityIndex = state.activities[state.cycleIndex].findIndex(
+    const activityIndex = state.activities[state.categoryIndex].findIndex(
       (v) => v.id === activity.id
     );
-    state.activities[state.cycleIndex][activityIndex].name = activity.name;
+    state.activities[state.categoryIndex][activityIndex].name = activity.name;
     if (
-      state.cycleIndex === state.runningActivity.group &&
+      state.categoryIndex === state.runningActivity.group &&
       id === state.runningActivity.id
     )
       state.runningActivity.name = activity.name;
@@ -188,10 +184,12 @@ async function addHistoryRecord() {
 </script>
 
 <template>
+  <!-- category bar -->
+  <!-- current activity -->
+  <!-- activity selection -->
+  <!-- management panel -->
   <div class="do-bounds" @click="clearSelected">
-    <div class="title-switcher" @click="cycleViewIndex">
-      <h1>{{ currentView }}</h1>
-    </div>
+    <CategoryBar @nextCategory="updateCategory" />
     <div class="current-activity">
       <div
         v-if="state.runningActivity.name"
@@ -203,7 +201,7 @@ async function addHistoryRecord() {
         </button>
       </div>
     </div>
-    <DoView
+    <ActivitySelectionView
       :activities="currentActivities"
       :runningActivity="state.runningActivity"
       @activitySelected="updateCurrentActivity"
