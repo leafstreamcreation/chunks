@@ -260,6 +260,7 @@ async function addHistoryRecord() {
 h1,
 h3 {
   text-align: center;
+  color: black;
 }
 
 div {
