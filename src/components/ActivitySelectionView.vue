@@ -13,6 +13,7 @@
 
 import Shuffler from "../utilities/Shuffler";
 import { reactive, computed, watch } from "vue";
+import SelectedActivity from "./SelectedActivity.vue";
 
 const state = reactive({
   filter: "",
