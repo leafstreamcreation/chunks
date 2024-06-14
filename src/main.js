@@ -1,6 +1,8 @@
 import { createApp } from "vue";
+import { createPinia } from "pinia";
 import App from "./App.vue";
 import router from "./router";
+import { create } from "lodash";
 
 let app;
 
@@ -14,8 +16,10 @@ if ("serviceWorker" in navigator) {
       console.log("Service worker registration failed:", error);
     })
     ?.then((registration) => {
+      const pinia = createPinia();
       app = createApp(App);
       app.use(router);
+      app.use(pinia);
       app.mount("#app");
     });
 } else {

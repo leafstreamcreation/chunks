@@ -1,10 +1,12 @@
 <script setup>
 import { reactive, computed, onMounted } from "vue";
 import { keyBy } from "lodash";
-import activityService from "../services/Activity.service";
 import ActivitySelectionView from "../components/ActivitySelectionView.vue";
 import ActivityManagementPanel from "../components/ActivityManagementPanel.vue";
 import CategoryBar from "../components/CategoryBar.vue";
+import { useActivityStore } from "../stores/activityStore";
+
+const activityStore = useActivityStore();
 
 const state = reactive({
   runningActivity: {},
@@ -15,7 +17,6 @@ const state = reactive({
   editingActivities: false,
   nameInProgress: "",
   selectedId: null,
-  loaderLock: false,
 });
 const currentActivities = computed(() => {
   const deproxiedActivities = Object.values(
@@ -37,39 +38,10 @@ const currentActivities = computed(() => {
   return keyBy(deproxiedActivities, "id");
 });
 
-onMounted(loadActivities);
-
-async function loadActivities() {
-  if (state.loaderLock === true) return;
-  state.loaderLock = true;
-  const data = await activityService(`index`);
-  if (!data || !data.activitiesByGroup) return;
-  const activitiesByGroup = data.activitiesByGroup;
-  let loadedActivities = activitiesByGroup;
-  if (activitiesByGroup.length !== 3) {
-    let nextDataIndex = 0;
-    const edgeGroups = [];
-    for (let i = 0; i < 3; i++) {
-      const dataGroup = activitiesByGroup[nextDataIndex];
-      if (dataGroup && dataGroup[0]?.group === i) {
-        edgeGroups.push(activitiesByGroup[nextDataIndex]);
-        nextDataIndex += 1;
-      } else edgeGroups.push([]);
-    }
-    loadedActivities = edgeGroups;
-  }
-  loadedActivities.forEach((group) => {
-    group.forEach((activity) => {
-      activity.history.forEach((entry) => {
-        for (const key in entry) {
-          entry[key] = new Date(key);
-        }
-      });
-    });
-  });
-  state.activities = loadedActivities;
-  state.loaderLock = false;
-}
+onMounted(async () => {
+  await activityStore.loadActivities();
+  state.activities = activityStore.activities;
+});
 
 function updateCategory(newIndex) {
   state.categoryIndex = newIndex;
