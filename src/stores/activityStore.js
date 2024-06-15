@@ -4,9 +4,11 @@ import activityService from "../services/Activity.service";
 
 export const useActivityStore = defineStore("activities", () => {
   const selectedId = ref(0);
+  const runningActivity = ref({});
   const loaderLock = ref(false);
   const activities = ref([]);
   const currentActivity = computed(() => activities.value[selectedId]);
+
   async function loadActivities() {
     //fetch activities
     if (loaderLock.value === true) return;
@@ -40,5 +42,28 @@ export const useActivityStore = defineStore("activities", () => {
     loaderLock.value = false;
   }
 
-  return { selectedId, activities, currentActivity, loadActivities };
+  async function deleteActivity(id) {
+    const data = await activityService(`${id}/delete`, true);
+    if (!data) return loadActivities();
+    const { activity } = data;
+    if (activity) {
+      const activityIndex = activities.value[activity.group].findIndex(
+        (v) => v.id === activity.id
+      );
+      if (
+        activity.group === runningActivity.value.group &&
+        activity.id === runningActivity.value.id
+      )
+        runningActivity.value = {};
+      activities.value[activity.group].splice(activityIndex, 1);
+    }
+  }
+
+  return {
+    selectedId,
+    activities,
+    currentActivity,
+    loadActivities,
+    deleteActivity,
+  };
 });

@@ -67,21 +67,8 @@ function clearSelected() {
 }
 
 async function deleteActivity(id) {
-  const data = await activityService(`${id}/delete`, true);
-  if (!data) return loadActivities();
-  const { activity } = data;
-  if (activity) {
-    const activityIndex = state.activities[state.categoryIndex].findIndex(
-      (v) => v.id === activity.id
-    );
-    if (
-      state.categoryIndex === state.runningActivity.group &&
-      activity.id === state.runningActivity.id
-    )
-      state.runningActivity = {};
-    state.activities[state.categoryIndex].splice(activityIndex, 1);
-    clearSelected();
-  }
+  await activityStore.deleteActivity(id);
+  clearSelected();
 }
 
 async function createActivity() {
