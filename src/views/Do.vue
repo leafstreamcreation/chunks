@@ -72,13 +72,7 @@ async function deleteActivity(id) {
 }
 
 async function createActivity() {
-  const name = state.nameInProgress;
-  const group = state.categoryIndex;
-
-  const data = await activityService(`create`, true, { name, group });
-  if (!data) return loadActivities();
-  const { activity } = data;
-  if (activity) state.activities[state.categoryIndex].push(activity);
+  await activityStore.createActivity(state.nameInProgress, state.categoryIndex);
   clearSelected();
 }
 

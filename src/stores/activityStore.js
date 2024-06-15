@@ -42,6 +42,13 @@ export const useActivityStore = defineStore("activities", () => {
     loaderLock.value = false;
   }
 
+  async function createActivity(name, group) {
+    const data = await activityService(`create`, true, { name, group });
+    if (!data) return loadActivities();
+    const { activity } = data;
+    if (activity) activities.value[group].push(activity);
+  }
+
   async function deleteActivity(id) {
     const data = await activityService(`${id}/delete`, true);
     if (!data) return loadActivities();
@@ -65,5 +72,6 @@ export const useActivityStore = defineStore("activities", () => {
     currentActivity,
     loadActivities,
     deleteActivity,
+    createActivity,
   };
 });
