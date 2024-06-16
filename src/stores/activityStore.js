@@ -1,13 +1,44 @@
 import { ref, computed } from "vue";
 import { defineStore } from "pinia";
 import activityService from "../services/Activity.service";
+import { keyBy } from "lodash";
 
 export const useActivityStore = defineStore("activities", () => {
   const selectedId = ref(0);
+  const activeCategory = ref(0);
   const runningActivity = ref({});
   const loaderLock = ref(false);
   const activities = ref([]);
+
   const currentActivity = computed(() => activities.value[selectedId]);
+
+  const activitiesInView = computed(() => {
+    const deproxiedActivities = Object.values(
+      activities.value[activeCategory.value]
+    ).map((innerProxy) => {
+      const { id, name, history, group } = innerProxy;
+      const historyDeproxy = Object.values(history).map((innerInnerProxy) => {
+        const { startDate, endDate } = innerInnerProxy;
+        return { startDate, endDate };
+      });
+      const activity = { id, name, history: historyDeproxy, group };
+      const latestHistory = historyDeproxy[historyDeproxy.length - 1];
+      if (latestHistory?.startDate && !latestHistory.endDate) {
+        runningActivity.value = activity;
+        // runStarted = true;
+      }
+      return activity;
+    });
+    return keyBy(deproxiedActivities, "id");
+  });
+
+  function selectActivity(activity) {
+    currentActivity.value = activity;
+  }
+
+  function selectCategory(id) {
+    activeCategory.value = id;
+  }
 
   async function loadActivities() {
     //fetch activities
@@ -70,6 +101,9 @@ export const useActivityStore = defineStore("activities", () => {
     selectedId,
     activities,
     currentActivity,
+    activitiesInView,
+    selectActivity,
+    selectCategory,
     loadActivities,
     deleteActivity,
     createActivity,

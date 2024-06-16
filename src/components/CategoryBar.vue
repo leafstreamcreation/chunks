@@ -1,5 +1,6 @@
 <script setup>
 import { reactive, computed } from "vue";
+import { useActivityStore } from "../stores/activityStore";
 
 //this component manages the current category selected by the user
 //it shows the name of the category
@@ -8,6 +9,8 @@ import { reactive, computed } from "vue";
 //panel for the current category
 
 const emit = defineEmits(["nextCategory"]);
+
+const activityStore = useActivityStore();
 
 const state = reactive({
   cycleIndex: 0,
@@ -24,6 +27,8 @@ const currentView = computed(() => {
 });
 function cycleViewIndex() {
   state.cycleIndex = state.cycleIndex < 2 ? state.cycleIndex + 1 : 0;
+  activityStore.selectCategory(state.cycleIndex);
+  //modify the activity store
   emit("nextCategory", state.cycleIndex);
 }
 </script>
