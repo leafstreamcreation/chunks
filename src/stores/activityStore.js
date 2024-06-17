@@ -10,7 +10,9 @@ export const useActivityStore = defineStore("activities", () => {
   const loaderLock = ref(false);
   const activities = ref([]);
 
-  const currentActivity = computed(() => activities.value[selectedId]);
+  const currentActivity = computed(
+    () => activitiesInView.value[selectedId.value]
+  );
 
   const activitiesInView = computed(() => {
     const deproxiedActivities = Object.values(
@@ -25,7 +27,6 @@ export const useActivityStore = defineStore("activities", () => {
       const latestHistory = historyDeproxy[historyDeproxy.length - 1];
       if (latestHistory?.startDate && !latestHistory.endDate) {
         runningActivity.value = activity;
-        // runStarted = true;
       }
       return activity;
     });
@@ -99,6 +100,7 @@ export const useActivityStore = defineStore("activities", () => {
 
   return {
     selectedId,
+    activeCategory,
     activities,
     currentActivity,
     activitiesInView,

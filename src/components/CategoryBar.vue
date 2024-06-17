@@ -23,7 +23,7 @@ const currentView = computed(() => {
   //values store labels/ url parts for backend calls, etc
   //for each view option: alone, together, nothing
   const values = ["Alone", "Together", "Nothing"];
-  return values[state.cycleIndex];
+  return values[activityStore.activeCategory];
 });
 function cycleViewIndex() {
   state.cycleIndex = state.cycleIndex < 2 ? state.cycleIndex + 1 : 0;
