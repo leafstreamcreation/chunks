@@ -8,7 +8,6 @@ import { useActivityStore } from "../stores/activityStore";
 const activityStore = useActivityStore();
 
 const state = reactive({
-  runningActivity: {},
   runStarted: false,
   activityLocked: true,
   editingActivities: false,
@@ -26,14 +25,15 @@ function updateCategory() {
 }
 
 function updateCurrentActivity(activity) {
-  if (state.runStarted && activity !== state.runningActivity)
+  if (state.runStarted && activity !== activityStore.runningActivity)
     addHistoryRecord();
-  state.runningActivity = activity !== state.runningActivity ? activity : {};
+  activityStore.runningActivity =
+    activity !== activityStore.runningActivity ? activity : {};
 }
 
 function selectActivity(id) {
   state.selectedId = state.selectedId !== id ? id : null;
-  const thisActivity = activityStore.activitiesInView.value[id];
+  const thisActivity = activityStore.activitiesInView[id];
   state.nameInProgress = state.selectedId ? thisActivity.name : "";
 }
 
@@ -56,23 +56,8 @@ async function createActivity() {
 }
 
 async function updateActivity(id) {
-  const name = state.nameInProgress;
-
-  const data = await activityService(`${id}/update`, true, { name });
-  if (!data) return loadActivities();
-  const { activity } = data;
-  if (activity) {
-    const activityIndex = state.activities[state.categoryIndex].findIndex(
-      (v) => v.id === activity.id
-    );
-    state.activities[state.categoryIndex][activityIndex].name = activity.name;
-    if (
-      state.categoryIndex === state.runningActivity.group &&
-      id === state.runningActivity.id
-    )
-      state.runningActivity.name = activity.name;
-    clearSelected();
-  }
+  const activity = await activityStore.renameActivity(id, state.nameInProgress);
+  if (activity) clearSelected();
 }
 
 function changeNewActivityText({ target }) {
@@ -80,7 +65,7 @@ function changeNewActivityText({ target }) {
 }
 
 async function addHistoryRecord() {
-  const activity = state.runningActivity;
+  const activity = activityStore.runningActivity;
   const index = state.activities[activity.group].findIndex(
     (v) => v.id === activity.id
   );
@@ -124,10 +109,10 @@ async function addHistoryRecord() {
     <CategoryBar @nextCategory="updateCategory" />
     <div class="current-activity">
       <div
-        v-if="state.runningActivity.name"
+        v-if="activityStore.runningActivity?.name"
         @click="state.activityLocked = !state.activityLocked"
       >
-        <h3>{{ state.runningActivity.name }}</h3>
+        <h3>{{ activityStore.runningActivity?.name }}</h3>
         <button v-if="!state.activityLocked" @click="addHistoryRecord">
           {{ state.runStarted ? "Stop" : "Start" }}
         </button>
@@ -135,7 +120,7 @@ async function addHistoryRecord() {
     </div>
     <ActivitySelectionView
       :activities="activityStore.activitiesInView || {}"
-      :runningActivity="state.runningActivity"
+      :runningActivity="activityStore.runningActivity"
       @activitySelected="updateCurrentActivity"
     />
     <div class="management-panel">
@@ -160,7 +145,7 @@ async function addHistoryRecord() {
       </div>
       <div v-if="state.editingActivities" class="activity-list">
         <div
-          v-for="{ id, name } in currentActivities"
+          v-for="{ id, name } in activityStore.activitiesInView"
           :key="id"
           class="list-item"
         >

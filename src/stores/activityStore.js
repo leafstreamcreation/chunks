@@ -81,6 +81,26 @@ export const useActivityStore = defineStore("activities", () => {
     if (activity) activities.value[group].push(activity);
   }
 
+  async function renameActivity(id, name) {
+    const data = await activityService(`${id}/update`, true, { name });
+    if (!data) return loadActivities();
+    const { activity } = data;
+    if (activity) {
+      const activityIndex = activities.value[activeCategory.value].findIndex(
+        (v) => v.id === activity.id
+      );
+      activities.value[activeCategory.value][activityIndex].name =
+        activity.name;
+      if (
+        activeCategory.value === runningActivity.value.group &&
+        id === runningActivity.value.id
+      )
+        runningActivity.value.name = activity.name;
+    }
+  }
+
+  async function addHistory() {}
+
   async function deleteActivity(id) {
     const data = await activityService(`${id}/delete`, true);
     if (!data) return loadActivities();
@@ -103,11 +123,14 @@ export const useActivityStore = defineStore("activities", () => {
     activeCategory,
     activities,
     currentActivity,
+    runningActivity,
     activitiesInView,
     selectActivity,
     selectCategory,
     loadActivities,
-    deleteActivity,
     createActivity,
+    renameActivity,
+    addHistory,
+    deleteActivity,
   };
 });
