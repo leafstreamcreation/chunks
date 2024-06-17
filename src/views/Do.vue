@@ -1,6 +1,5 @@
 <script setup>
-import { reactive, computed, onMounted } from "vue";
-import { keyBy } from "lodash";
+import { reactive, onMounted } from "vue";
 import ActivitySelectionView from "../components/ActivitySelectionView.vue";
 import ActivityManagementPanel from "../components/ActivityManagementPanel.vue";
 import CategoryBar from "../components/CategoryBar.vue";
@@ -12,39 +11,16 @@ const state = reactive({
   runningActivity: {},
   runStarted: false,
   activityLocked: true,
-  categoryIndex: 0,
-  activities: [[], [], []],
   editingActivities: false,
   nameInProgress: "",
   selectedId: null,
 });
-const currentActivities = computed(() => {
-  const deproxiedActivities = Object.values(
-    state.activities[state.categoryIndex]
-  ).map((innerProxy) => {
-    const { id, name, history, group } = innerProxy;
-    const historyDeproxy = Object.values(history).map((innerInnerProxy) => {
-      const { startDate, endDate } = innerInnerProxy;
-      return { startDate, endDate };
-    });
-    const activity = { id, name, history: historyDeproxy, group };
-    const latestHistory = historyDeproxy[historyDeproxy.length - 1];
-    if (latestHistory?.startDate && !latestHistory.endDate) {
-      state.runningActivity = activity;
-      state.runStarted = true;
-    }
-    return activity;
-  });
-  return keyBy(deproxiedActivities, "id");
-});
 
 onMounted(async () => {
   await activityStore.loadActivities();
-  state.activities = activityStore.activities;
 });
 
-function updateCategory(newIndex) {
-  state.categoryIndex = newIndex;
+function updateCategory() {
   state.editingActivities = false;
   clearSelected();
 }
@@ -57,7 +33,7 @@ function updateCurrentActivity(activity) {
 
 function selectActivity(id) {
   state.selectedId = state.selectedId !== id ? id : null;
-  const thisActivity = currentActivities.value[id];
+  const thisActivity = activityStore.activitiesInView.value[id];
   state.nameInProgress = state.selectedId ? thisActivity.name : "";
 }
 
@@ -72,7 +48,10 @@ async function deleteActivity(id) {
 }
 
 async function createActivity() {
-  await activityStore.createActivity(state.nameInProgress, state.categoryIndex);
+  await activityStore.createActivity(
+    state.nameInProgress,
+    activityStore.activeCategory
+  );
   clearSelected();
 }
 
@@ -155,7 +134,7 @@ async function addHistoryRecord() {
       </div>
     </div>
     <ActivitySelectionView
-      :activities="currentActivities"
+      :activities="activityStore.activitiesInView || {}"
       :runningActivity="state.runningActivity"
       @activitySelected="updateCurrentActivity"
     />

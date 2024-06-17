@@ -29,7 +29,7 @@ function cycleViewIndex() {
   state.cycleIndex = state.cycleIndex < 2 ? state.cycleIndex + 1 : 0;
   activityStore.selectCategory(state.cycleIndex);
   //modify the activity store
-  emit("nextCategory", state.cycleIndex);
+  emit("nextCategory");
 }
 </script>
 

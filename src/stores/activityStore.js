@@ -16,7 +16,7 @@ export const useActivityStore = defineStore("activities", () => {
 
   const activitiesInView = computed(() => {
     const deproxiedActivities = Object.values(
-      activities.value[activeCategory.value]
+      activities.value[activeCategory.value] || {}
     ).map((innerProxy) => {
       const { id, name, history, group } = innerProxy;
       const historyDeproxy = Object.values(history).map((innerInnerProxy) => {
