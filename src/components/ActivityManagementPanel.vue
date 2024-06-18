@@ -3,7 +3,7 @@
 //it has a list of activities for the category,
 //a field to add new activities to the category,
 
-import { reactive } from "vue";
+import { reactive, watch } from "vue";
 import { useActivityStore } from "../stores/activityStore";
 
 //and controls to edit and delete selected activities in the category
@@ -14,6 +14,14 @@ const state = reactive({
   nameInProgress: "",
   selectedId: null,
 });
+
+watch(
+  () => activityStore.activeCategory,
+  () => {
+    state.editingActivities = false;
+    clearSelected();
+  }
+);
 
 function selectActivity(id) {
   state.selectedId = state.selectedId !== id ? id : null;

@@ -8,8 +8,6 @@ import { useActivityStore } from "../stores/activityStore";
 //and has a button to open the activity management
 //panel for the current category
 
-const emit = defineEmits(["nextCategory"]);
-
 const activityStore = useActivityStore();
 
 const state = reactive({
@@ -28,8 +26,6 @@ const currentView = computed(() => {
 function cycleViewIndex() {
   state.cycleIndex = state.cycleIndex < 2 ? state.cycleIndex + 1 : 0;
   activityStore.selectCategory(state.cycleIndex);
-  //modify the activity store
-  emit("nextCategory");
 }
 </script>
 

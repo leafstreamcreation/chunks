@@ -16,11 +16,6 @@ onMounted(async () => {
   await activityStore.loadActivities();
 });
 
-function updateCategory() {
-  // state.editingActivities = false;
-  // clearSelected();
-}
-
 function updateCurrentActivity(activity) {
   if (state.runStarted && activity !== activityStore.runningActivity)
     addHistoryRecord();
@@ -39,7 +34,7 @@ async function addHistoryRecord() {
   <!-- activity selection -->
   <!-- management panel -->
   <div class="do-bounds">
-    <CategoryBar @nextCategory="updateCategory" />
+    <CategoryBar />
     <div class="current-activity">
       <div
         v-if="activityStore.runningActivity?.name"
