@@ -9,6 +9,7 @@ export const useActivityStore = defineStore("activities", () => {
   const runningActivity = ref({});
   const loaderLock = ref(false);
   const activities = ref([]);
+  const runStarted = ref(false);
 
   const currentActivity = computed(
     () => activitiesInView.value[selectedId.value]
@@ -99,7 +100,41 @@ export const useActivityStore = defineStore("activities", () => {
     }
   }
 
-  async function addHistory() {}
+  async function addHistoryRecord() {
+    const activity = runningActivity.value;
+    const index = activities.value[activity.group].findIndex(
+      (v) => v.id === activity.id
+    );
+    if (!runStarted.value) {
+      const data = await activityService(`${activity.id}/update`, true, {
+        startDate: new Date().toISOString(),
+      });
+      if (!data) return loadActivities();
+      const { activity: updatedActivity } = data;
+      const latestIndex = updatedActivity.history.length - 1;
+      if (updatedActivity) {
+        const date = updatedActivity.history[latestIndex].startDate;
+        activities.value[activity.group][index].history[latestIndex].startDate =
+          new Date(date);
+        runStarted.value = true;
+      }
+    } else {
+      const data = await activityService(`${activity.id}/update`, true, {
+        endDate: new Date().toISOString(),
+      });
+      if (!data) return loadActivities();
+      const { activity: updatedActivity } = data;
+      const latestIndex = updatedActivity.history.length - 2;
+      if (updatedActivity) {
+        const date = updatedActivity.history[latestIndex].endDate;
+        activities.value[activity.group][index].history[latestIndex].endDate =
+          new Date(date);
+        activities.value[activity.group][index].history.push({});
+        runStarted.value = false;
+      }
+    }
+    return runStarted.value;
+  }
 
   async function deleteActivity(id) {
     const data = await activityService(`${id}/delete`, true);
@@ -130,7 +165,7 @@ export const useActivityStore = defineStore("activities", () => {
     loadActivities,
     createActivity,
     renameActivity,
-    addHistory,
+    addHistoryRecord,
     deleteActivity,
   };
 });

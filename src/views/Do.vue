@@ -65,38 +65,7 @@ function changeNewActivityText({ target }) {
 }
 
 async function addHistoryRecord() {
-  const activity = activityStore.runningActivity;
-  const index = state.activities[activity.group].findIndex(
-    (v) => v.id === activity.id
-  );
-  if (!state.runStarted) {
-    const data = await activityService(`${activity.id}/update`, true, {
-      startDate: new Date().toISOString(),
-    });
-    if (!data) return loadActivities();
-    const { activity: updatedActivity } = data;
-    const latestIndex = updatedActivity.history.length - 1;
-    if (updatedActivity) {
-      const date = updatedActivity.history[latestIndex].startDate;
-      state.activities[activity.group][index].history[latestIndex].startDate =
-        new Date(date);
-      state.runStarted = true;
-    }
-  } else {
-    const data = await activityService(`${activity.id}/update`, true, {
-      endDate: new Date().toISOString(),
-    });
-    if (!data) return loadActivities();
-    const { activity: updatedActivity } = data;
-    const latestIndex = updatedActivity.history.length - 2;
-    if (updatedActivity) {
-      const date = updatedActivity.history[latestIndex].endDate;
-      state.activities[activity.group][index].history[latestIndex].endDate =
-        new Date(date);
-      state.activities[activity.group][index].history.push({});
-      state.runStarted = false;
-    }
-  }
+  await activityStore.addHistoryRecord();
 }
 </script>
 
@@ -114,7 +83,7 @@ async function addHistoryRecord() {
       >
         <h3>{{ activityStore.runningActivity?.name }}</h3>
         <button v-if="!state.activityLocked" @click="addHistoryRecord">
-          {{ state.runStarted ? "Stop" : "Start" }}
+          {{ activityStore.runStarted ? "Stop" : "Start" }}
         </button>
       </div>
     </div>
