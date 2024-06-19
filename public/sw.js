@@ -2,7 +2,7 @@ self.importScripts("/localforage.min.js");
 self.importScripts("/odm.js");
 
 const textEncoder = new TextEncoder();
-const db = ODM();
+const db = ODM(); // eslint-disable-line
 
 const BASE_URL_ACTIVITY = "https://localhost:5051/activity/";
 
@@ -11,7 +11,7 @@ self.addEventListener("install", (event) => {
 });
 
 self.addEventListener("activate", (event) => {
-  event.waitUntil(clients.claim());
+  event.waitUntil(clients.claim()); // eslint-disable-line
 });
 
 self.addEventListener("fetch", (event) => {

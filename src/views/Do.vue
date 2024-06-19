@@ -16,13 +16,6 @@ onMounted(async () => {
   await activityStore.loadActivities();
 });
 
-function updateCurrentActivity(activity) {
-  if (state.runStarted && activity !== activityStore.runningActivity)
-    addHistoryRecord();
-  activityStore.runningActivity =
-    activity !== activityStore.runningActivity ? activity : {};
-}
-
 async function addHistoryRecord() {
   await activityStore.addHistoryRecord();
 }
@@ -46,11 +39,7 @@ async function addHistoryRecord() {
         </button>
       </div>
     </div>
-    <ActivitySelectionView
-      :activities="activityStore.activitiesInView || {}"
-      :runningActivity="activityStore.runningActivity"
-      @activitySelected="updateCurrentActivity"
-    />
+    <ActivitySelectionView />
     <ActivityManagementPanel />
   </div>
 </template>
@@ -79,11 +68,6 @@ div {
   align-items: center;
 }
 
-.title-switcher {
-  background-color: #bdd5ea;
-  color: black;
-  height: 15%;
-}
 .current-activity {
   background-color: #f6e27f;
   height: 20%;

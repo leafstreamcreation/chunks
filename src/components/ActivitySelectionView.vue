@@ -14,6 +14,9 @@
 import Shuffler from "../utilities/Shuffler";
 import { reactive, computed, watch } from "vue";
 import SelectedActivity from "./SelectedActivity.vue";
+import { useActivityStore } from "../stores/activityStore";
+
+const activityStore = useActivityStore();
 
 const state = reactive({
   filter: "",
@@ -21,32 +24,8 @@ const state = reactive({
   suggestionIndex: 0,
 });
 
-const props = defineProps({
-  activities: {
-    type: Object,
-    required: true,
-  },
-  runningActivity: {
-    type: Object,
-    required: true,
-  },
-});
-const emit = defineEmits(["activitySelected"]);
-
 const filteredActivities = computed(() => {
-  return filterActivities(Object.values(props.activities));
-});
-
-const randomActivities = computed(() => {
-  return orderByRandom(Object.values(props.activities));
-});
-
-const activitiesByStaleness = computed(() => {
-  return orderByStaleness(Object.values(props.activities));
-});
-
-const activitiesByLeastTime = computed(() => {
-  return orderByLeastTime(Object.values(props.activities));
+  return filterActivities(Object.values(activityStore.activitiesInView));
 });
 
 const suggestions = computed(() => {
@@ -82,9 +61,12 @@ function nextSuggestion() {
       state.suggestionIndex < maxIndex ? state.suggestionIndex + 1 : maxIndex;
   }
 }
-watch(props, () => {
-  refreshSuggestions();
-});
+watch(
+  [() => activityStore.activitiesInView, () => activityStore.runningActivity],
+  () => {
+    refreshSuggestions();
+  }
+);
 
 function refreshSuggestions() {
   state.suggestionIndex = 0;
@@ -139,9 +121,7 @@ function filterActivities(activities) {
 }
 
 function selectActivity(id) {
-  const activities = Object.values(props.activities);
-  const index = activities.findIndex((v) => v.id === id);
-  emit("activitySelected", activities[index] || {});
+  activityStore.selectActivity(id);
 }
 </script>
 

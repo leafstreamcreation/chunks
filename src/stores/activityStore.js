@@ -4,16 +4,11 @@ import activityService from "../services/Activity.service";
 import { keyBy } from "lodash";
 
 export const useActivityStore = defineStore("activities", () => {
-  const selectedId = ref(0);
   const activeCategory = ref(0);
   const runningActivity = ref({});
   const loaderLock = ref(false);
   const activities = ref([]);
   const runStarted = ref(false);
-
-  const currentActivity = computed(
-    () => activitiesInView.value[selectedId.value]
-  );
 
   const activitiesInView = computed(() => {
     const deproxiedActivities = Object.values(
@@ -34,8 +29,8 @@ export const useActivityStore = defineStore("activities", () => {
     return keyBy(deproxiedActivities, "id");
   });
 
-  function selectActivity(activity) {
-    currentActivity.value = activity;
+  function selectActivity(id) {
+    runningActivity.value = activitiesInView.value[id] || {};
   }
 
   function selectCategory(id) {
@@ -154,10 +149,9 @@ export const useActivityStore = defineStore("activities", () => {
   }
 
   return {
-    selectedId,
     activeCategory,
     activities,
-    currentActivity,
+    runStarted,
     runningActivity,
     activitiesInView,
     selectActivity,

@@ -1,5 +1,5 @@
-function ODM() {
-  const lf = localforage;
+function ODM() { // eslint-disable-line
+  const lf = localforage; // eslint-disable-line
   const STATE_LAST_ID = "latestId";
   const STATE_IDS = "ids";
 

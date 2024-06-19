@@ -12,10 +12,6 @@ const activityStore = useActivityStore();
 
 const state = reactive({
   cycleIndex: 0,
-  editingActivities: false,
-  nameInProgress: "",
-  selectedId: null,
-  loaderLock: false,
 });
 const currentView = computed(() => {
   //values store labels/ url parts for backend calls, etc
