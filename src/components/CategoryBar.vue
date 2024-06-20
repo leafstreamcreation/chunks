@@ -26,9 +26,12 @@ function cycleViewIndex() {
 </script>
 
 <template>
-  <div class="title-switcher" @click="cycleViewIndex">
-    <h1>{{ currentView }}</h1>
-  </div>
+  <v-app-bar
+    class="title-switcher"
+    :title="currentView"
+    @click="cycleViewIndex"
+  >
+  </v-app-bar>
 </template>
 
 <style scoped>

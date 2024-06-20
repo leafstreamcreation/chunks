@@ -26,7 +26,7 @@ async function addHistoryRecord() {
   <!-- current activity -->
   <!-- activity selection -->
   <!-- management panel -->
-  <div class="do-bounds">
+  <v-app class="do-bounds">
     <CategoryBar />
     <div class="current-activity">
       <div
@@ -41,7 +41,7 @@ async function addHistoryRecord() {
     </div>
     <ActivitySelectionView />
     <ActivityManagementPanel />
-  </div>
+  </v-app>
 </template>
 
 <style scoped>
