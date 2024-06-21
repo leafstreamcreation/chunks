@@ -126,32 +126,46 @@ function selectActivity(id) {
 </script>
 
 <template>
-  <div class="do-view">
+  <v-main class="do-view">
+    <SelectedActivity />
     <div class="options">
-      <div class="options-button" @click="reverseOrder">
-        {{ state.sortReversed ? "Reverse" : "Normal" }}
-      </div>
-      <input type="text" v-model="state.filter" placeholder="filter by name" />
-      <div class="options-button" @click="refreshSuggestions">Refresh</div>
-      <div
+      <v-btn
         class="options-button"
+        color="#f7f7ff"
+        :text="state.sortReversed ? 'Reverse' : 'Normal'"
+        @click="reverseOrder"
+      />
+      <v-text-field
+        v-model="state.filter"
+        label="Filter activities"
+        bg-color="white"
+        clearable
+      />
+      <v-btn
+        class="options-button"
+        color="#f7f7ff"
+        text="Refresh"
+        @click="refreshSuggestions"
+      />
+      <v-btn
+        class="options-button"
+        color="#f7f7ff"
+        text="Next"
         :disabled="filteredActivities.length === 0"
         @click="nextSuggestion"
-      >
-        Next
-      </div>
+      />
     </div>
     <div class="suggestions">
-      <div
+      <v-btn
         v-for="(activity, index) in suggestions"
         :key="index"
         @click="selectActivity(activity?.id)"
-        class="suggestion-item"
-      >
-        {{ activity?.name }}
-      </div>
+        color="#f6e27f"
+        width="30%"
+        :text="activity?.name"
+      />
     </div>
-  </div>
+  </v-main>
 </template>
 
 <style scoped>
@@ -162,8 +176,8 @@ function selectActivity(id) {
 /* Jasmine       #F6E27F; */
 
 div {
-  width: 100%;
-  height: 100%;
+  /* width: 100%;
+  height: 100%; */
 }
 
 .do-view {
@@ -172,7 +186,6 @@ div {
   flex-direction: column;
   align-items: center;
   width: 100%;
-  height: 100%;
 }
 
 .options {
@@ -189,17 +202,8 @@ div {
   justify-content: space-evenly;
   width: 100%;
 }
-.suggestion-item {
-  background-color: #f6e27f;
-  color: black;
-  width: 30%;
-}
 
 .options-button {
-  background-color: #f7f7ff;
-  color: black;
-  text-align: center;
   margin: 2px;
-  padding: 2px;
 }
 </style>
