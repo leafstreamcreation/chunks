@@ -18,7 +18,7 @@ import Do from "@/views/Do.vue";
 </template>
 
 <style>
-@import "@/assets/base.css";
+/* @import "@/assets/base.css";
 
 #app {
   width: 100vw;
@@ -80,15 +80,15 @@ nav a:first-of-type {
   body {
     display: flex;
     place-items: center;
-  }
+  } */
 
-  /* #app {
+/* #app {
     display: grid;
     grid-template-columns: 1fr 1fr;
     padding: 0 2rem;
   } */
 
-  header {
+/* header {
     display: flex;
     place-items: center;
     padding-right: calc(var(--section-gap) / 2);
@@ -112,5 +112,5 @@ nav a:first-of-type {
     padding: 1rem 0;
     margin-top: 1rem;
   }
-}
+} */
 </style>

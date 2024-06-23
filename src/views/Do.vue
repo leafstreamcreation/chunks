@@ -18,9 +18,13 @@ onMounted(async () => {
   <!-- activity selection -->
   <!-- management panel -->
   <v-app class="do-bounds">
-    <CategoryBar />
-    <ActivitySelectionView />
-    <ActivityManagementPanel />
+    <v-card>
+      <v-layout>
+        <CategoryBar />
+        <ActivitySelectionView />
+        <ActivityManagementPanel />
+      </v-layout>
+    </v-card>
   </v-app>
 </template>
 
