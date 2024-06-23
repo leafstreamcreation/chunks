@@ -126,9 +126,9 @@ function selectActivity(id) {
 </script>
 
 <template>
-  <v-main class="do-view">
+  <v-card class="activity-view">
     <SelectedActivity />
-    <div class="options">
+    <v-card class="options">
       <v-btn
         class="options-button"
         color="#f7f7ff"
@@ -154,8 +154,8 @@ function selectActivity(id) {
         :disabled="filteredActivities.length === 0"
         @click="nextSuggestion"
       />
-    </div>
-    <div class="suggestions">
+    </v-card>
+    <v-card class="suggestions">
       <v-btn
         v-for="(activity, index) in suggestions"
         :key="index"
@@ -164,8 +164,8 @@ function selectActivity(id) {
         width="30%"
         :text="activity?.name"
       />
-    </div>
-  </v-main>
+    </v-card>
+  </v-card>
 </template>
 
 <style scoped>
@@ -180,11 +180,8 @@ div {
   height: 100%; */
 }
 
-.do-view {
+.activity-view {
   background-color: #495867;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
   width: 100%;
 }
 
@@ -192,7 +189,6 @@ div {
   display: flex;
   flex-direction: row;
   justify-content: center;
-  height: 20%;
 }
 
 .suggestions {

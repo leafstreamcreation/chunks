@@ -19,19 +19,18 @@ async function addHistoryRecord() {
 </script>
 
 <template>
-  <div class="current-activity">
-    <div
-      v-if="activityStore.runningActivity?.name"
-      @click="state.activityLocked = !state.activityLocked"
-    >
-      <h3>{{ activityStore.runningActivity?.name }}</h3>
-      <v-btn
-        v-if="!state.activityLocked"
-        @click="addHistoryRecord"
-        :text="activityStore.runStarted ? 'Stop' : 'Start'"
-      />
-    </div>
-  </div>
+  <v-card
+    v-if="activityStore.runningActivity?.name"
+    :title="activityStore.runningActivity?.name"
+    class="current-activity"
+    @click="state.activityLocked = !state.activityLocked"
+  >
+    <v-btn
+      v-if="!state.activityLocked"
+      @click="addHistoryRecord"
+      :text="activityStore.runStarted ? 'Stop' : 'Start'"
+    />
+  </v-card>
 </template>
 
 <style scoped>
@@ -43,6 +42,5 @@ async function addHistoryRecord() {
 
 .current-activity {
   background-color: #f6e27f;
-  height: 20%;
 }
 </style>

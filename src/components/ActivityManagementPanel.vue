@@ -58,7 +58,7 @@ function changeNewActivityText({ target }) {
 </script>
 
 <template>
-  <div class="management-panel" @click="clearSelected">
+  <v-card class="management-panel" @click="clearSelected">
     <h3
       :class="
         state.editingActivities
@@ -98,7 +98,7 @@ function changeNewActivityText({ target }) {
         <p v-else @click.stop="selectActivity(id)">{{ name }}</p>
       </div>
     </div>
-  </div>
+  </v-card>
 </template>
 
 <style scoped>

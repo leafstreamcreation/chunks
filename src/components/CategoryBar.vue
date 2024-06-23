@@ -26,12 +26,7 @@ function cycleViewIndex() {
 </script>
 
 <template>
-  <v-app-bar
-    class="title-switcher"
-    :title="currentView"
-    @click="cycleViewIndex"
-  >
-  </v-app-bar>
+  <v-app-bar :title="currentView" @click="cycleViewIndex"> </v-app-bar>
 </template>
 
 <style scoped>
@@ -42,9 +37,7 @@ function cycleViewIndex() {
 /* Jasmine       #F6E27F; */
 
 .title-switcher {
-  text-align: center;
   background-color: #bdd5ea;
   color: black;
-  height: 15%;
 }
 </style>
