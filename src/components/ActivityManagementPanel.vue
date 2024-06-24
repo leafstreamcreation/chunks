@@ -52,52 +52,38 @@ async function updateActivity(id) {
   if (activity) clearSelected();
 }
 
-function changeNewActivityText({ target }) {
-  state.nameInProgress = target.value;
+function toggleEditing() {
+  state.editingActivities = !state.editingActivities;
+  clearSelected();
 }
 </script>
 
 <template>
-  <v-card class="management-panel" @click="clearSelected">
-    <h3
-      :class="
-        state.editingActivities
-          ? 'management-title-collapsed'
-          : 'management-title'
-      "
-      @click="state.editingActivities = !state.editingActivities"
-    >
-      Manage
-    </h3>
-    <div v-if="state.editingActivities" class="new-activity text-div">
-      <input
-        type="text"
-        name="name"
-        :value="state.selectedId ? '' : state.nameInProgress"
-        @input="changeNewActivityText"
+  <v-card class="management-panel" title="Manage" @click="toggleEditing">
+    <v-card v-if="state.editingActivities" class="new-activity text-div">
+      <v-text-field
+        :model-value="state.selectedId ? '' : state.nameInProgress"
+        label="New Activity"
+        bg-color="white"
+        clearable
+        @click.stop=""
       />
-      <button @click.stop="createActivity">Add</button>
-    </div>
-    <div v-if="state.editingActivities" class="activity-list">
+      <v-btn text="Add" @click.stop="createActivity" />
+    </v-card>
+    <v-card v-if="state.editingActivities" class="activity-list">
       <div
         v-for="{ id, name } in activityStore.activitiesInView"
         :key="id"
         class="list-item"
       >
         <div v-if="state.selectedId === id" class="activity-index text-div">
-          <button @click.stop="deleteActivity(id)">-</button>
-          <input
-            type="text"
-            name="update-name"
-            v-model="state.nameInProgress"
-            @click.stop=""
-            @change="updateActivity(id)"
-          />
-          <button>Rename</button>
+          <v-btn label="-" @click.stop="deleteActivity(id)" />
+          <v-text-field v-model="state.nameInProgress" @click.stop="" />
+          <v-btn label="Rename" @click.stop="updateActivity(id)" />
         </div>
         <p v-else @click.stop="selectActivity(id)">{{ name }}</p>
       </div>
-    </div>
+    </v-card>
   </v-card>
 </template>
 
@@ -108,7 +94,6 @@ function changeNewActivityText({ target }) {
 /* Ghost white   #F7F7FF; */
 /* Jasmine       #F6E27F; */
 .management-panel {
-  height: 30%;
   background-color: #577399;
   color: black;
 }

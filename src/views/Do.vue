@@ -17,13 +17,21 @@ onMounted(async () => {
   <!-- current activity -->
   <!-- activity selection -->
   <!-- management panel -->
-  <v-app class="do-bounds">
+  <v-app>
     <v-card height="100%" rounded="0">
       <v-layout full-height>
         <CategoryBar />
         <v-main class="do-view">
-          <ActivitySelectionView />
-          <ActivityManagementPanel />
+          <v-container fluid>
+            <v-row>
+              <v-col cols="12">
+                <ActivitySelectionView />
+              </v-col>
+              <v-col cols="12">
+                <ActivityManagementPanel />
+              </v-col>
+            </v-row>
+          </v-container>
         </v-main>
       </v-layout>
     </v-card>
@@ -36,10 +44,4 @@ onMounted(async () => {
 /* Columbia blue #BDD5EA; */
 /* Ghost white   #F7F7FF; */
 /* Jasmine       #F6E27F; */
-
-.do-view {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
 </style>
