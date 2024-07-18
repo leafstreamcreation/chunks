@@ -56,7 +56,7 @@ function toggleEditing() {
   state.editingActivities = !state.editingActivities;
   clearSelected();
 }
-//dumb
+
 </script>
 
 <template>
@@ -71,8 +71,8 @@ function toggleEditing() {
       />
       <v-btn text="Add" @click.stop="createActivity" />
     </v-card>
-    <v-card v-if="state.editingActivities" class="activity-list">
-      <div
+    <v-list v-if="state.editingActivities" class="activity-list">
+      <v-list-item
         v-for="{ id, name } in activityStore.activitiesInView"
         :key="id"
         class="list-item"
@@ -83,8 +83,8 @@ function toggleEditing() {
           <v-btn label="Rename" @click.stop="updateActivity(id)" />
         </div>
         <p v-else @click.stop="selectActivity(id)">{{ name }}</p>
-      </div>
-    </v-card>
+      </v-list-item>
+    </v-list>
   </v-card>
 </template>
 

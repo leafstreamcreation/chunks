@@ -26,7 +26,11 @@ function cycleViewIndex() {
 </script>
 
 <template>
-  <v-app-bar :title="currentView" @click="cycleViewIndex"> </v-app-bar>
+  <v-app-bar :title="currentView" @click="cycleViewIndex">
+    <template v-slot:prepend>
+      <v-app-bar-nav-icon @click.stop="$emit('leftMenuPress')"/>
+    </template>
+  </v-app-bar>
 </template>
 
 <style scoped>
