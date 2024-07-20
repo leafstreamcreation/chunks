@@ -2,6 +2,8 @@
 import { reactive, computed } from "vue";
 import { useActivityStore } from "../stores/activityStore";
 
+import { mdiPlaylistEdit } from "@mdi/js";
+
 //this component manages the current category selected by the user
 //it shows the name of the category
 //has controls to navigate the categories
@@ -26,10 +28,10 @@ function cycleViewIndex() {
 </script>
 
 <template>
-  <v-app-bar :title="currentView" @click="cycleViewIndex">
-    <template v-slot:prepend>
-      <v-app-bar-nav-icon @click.stop="$emit('leftMenuPress')"/>
-    </template>
+  <v-app-bar color="#bdd5ea">
+    <v-btn :icon="mdiPlaylistEdit" @click.stop="$emit('leftMenuPress')"></v-btn>
+
+    <v-app-bar-title :text="currentView" @click="cycleViewIndex" />
   </v-app-bar>
 </template>
 

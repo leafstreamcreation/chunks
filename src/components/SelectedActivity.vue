@@ -6,6 +6,10 @@
 import { reactive } from "vue";
 import { useActivityStore } from "../stores/activityStore";
 
+import { mdiTimerPlay } from "@mdi/js";
+import { mdiTimerStop } from "@mdi/js";
+import { mdiTimerSync } from "@mdi/js";
+
 const activityStore = useActivityStore();
 
 const state = reactive({
@@ -21,15 +25,21 @@ async function addHistoryRecord() {
 <template>
   <v-card
     v-if="activityStore.runningActivity?.name"
-    :title="activityStore.runningActivity?.name"
     class="current-activity"
+    :title="activityStore.runningActivity?.name"
     @click="state.activityLocked = !state.activityLocked"
+    width="100%"
   >
-    <v-btn
-      v-if="!state.activityLocked"
-      @click="addHistoryRecord"
-      :text="activityStore.runStarted ? 'Stop' : 'Start'"
-    />
+    <template v-slot:prepend>
+      <v-icon v-if="activityStore.runStarted" :icon="mdiTimerSync" />
+    </template>
+    <template v-slot:append>
+      <v-btn
+        v-if="!state.activityLocked"
+        @click="addHistoryRecord"
+        :icon="activityStore.runStarted ? mdiTimerStop : mdiTimerPlay"
+      />
+    </template>
   </v-card>
 </template>
 

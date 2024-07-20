@@ -16,6 +16,12 @@ import { reactive, computed, watch } from "vue";
 import SelectedActivity from "./SelectedActivity.vue";
 import { useActivityStore } from "../stores/activityStore";
 
+import { mdiRefresh } from "@mdi/js";
+import { mdiArrowDownRightBold } from "@mdi/js";
+import { mdiChevronUp } from "@mdi/js";
+import { mdiChevronDown } from "@mdi/js";
+import { mdiFilterVariant } from "@mdi/js";
+
 const activityStore = useActivityStore();
 
 const state = reactive({
@@ -114,7 +120,7 @@ function orderByStaleness(activities) {
 
 function filterActivities(activities) {
   const filtered = activities.filter((activity) =>
-    activity.name.toLowerCase().includes(state.filter.toLowerCase())
+    activity.name.toLowerCase().includes(state.filter?.toLowerCase())
   );
   state.suggestionIndex = 0;
   return filtered;
@@ -132,26 +138,32 @@ function selectActivity(id) {
       <v-btn
         class="options-button"
         color="#f7f7ff"
-        :text="state.sortReversed ? 'Reverse' : 'Normal'"
+        :icon="state.sortReversed ? mdiChevronUp : mdiChevronDown"
         @click="reverseOrder"
       />
       <v-text-field
+        :append-inner-icon="mdiFilterVariant"
         v-model="state.filter"
         label="Filter activities"
         bg-color="white"
         clearable
+        @click:clear="state.filter = ''"
       />
       <v-btn
         class="options-button"
         color="#f7f7ff"
-        text="Refresh"
+        :icon="mdiRefresh"
         @click="refreshSuggestions"
+        :disabled="state.suggestionIndex === 0"
       />
       <v-btn
         class="options-button"
         color="#f7f7ff"
-        text="Next"
-        :disabled="filteredActivities.length === 0"
+        :icon="mdiArrowDownRightBold"
+        :disabled="
+          filteredActivities.length === 0 ||
+          state.suggestionIndex === filteredActivities.length - 1
+        "
         @click="nextSuggestion"
       />
     </v-card>

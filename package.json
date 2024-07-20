@@ -8,6 +8,7 @@
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs --fix --ignore-path .gitignore"
   },
   "dependencies": {
+    "@mdi/js": "^7.4.47",
     "localforage": "^1.10.0",
     "lodash": "^4.17.21",
     "pinia": "^2.1.7",

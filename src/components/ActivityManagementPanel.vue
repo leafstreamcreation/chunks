@@ -56,7 +56,6 @@ function toggleEditing() {
   state.editingActivities = !state.editingActivities;
   clearSelected();
 }
-
 </script>
 
 <template>
