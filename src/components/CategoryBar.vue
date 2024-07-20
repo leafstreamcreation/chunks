@@ -3,6 +3,7 @@ import { reactive, computed } from "vue";
 import { useActivityStore } from "../stores/activityStore";
 
 import { mdiPlaylistEdit } from "@mdi/js";
+import { mdiClose } from "@mdi/js";
 
 //this component manages the current category selected by the user
 //it shows the name of the category
@@ -10,11 +11,16 @@ import { mdiPlaylistEdit } from "@mdi/js";
 //and has a button to open the activity management
 //panel for the current category
 
-const activityStore = useActivityStore();
+const props = defineProps({
+  leftMenuPressSelected: Boolean,
+});
 
 const state = reactive({
   cycleIndex: 0,
 });
+
+const activityStore = useActivityStore();
+
 const currentView = computed(() => {
   //values store labels/ url parts for backend calls, etc
   //for each view option: alone, together, nothing
@@ -29,7 +35,11 @@ function cycleViewIndex() {
 
 <template>
   <v-app-bar color="#bdd5ea">
-    <v-btn :icon="mdiPlaylistEdit" @click.stop="$emit('leftMenuPress')"></v-btn>
+    <v-btn
+      :active="props.leftMenuPressSelected"
+      :icon="props.leftMenuPressSelected ? mdiClose : mdiPlaylistEdit"
+      @click.stop="$emit('left-menu-press')"
+    ></v-btn>
 
     <v-app-bar-title :text="currentView" @click="cycleViewIndex" />
   </v-app-bar>

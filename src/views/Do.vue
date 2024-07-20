@@ -1,11 +1,15 @@
 <script setup>
-import { onMounted } from "vue";
+import { onMounted, reactive } from "vue";
 import ActivitySelectionView from "../components/ActivitySelectionView.vue";
 import ActivityManagementPanel from "../components/ActivityManagementPanel.vue";
 import CategoryBar from "../components/CategoryBar.vue";
 import { useActivityStore } from "../stores/activityStore";
 
 const activityStore = useActivityStore();
+
+const state = reactive({
+  managementPanelOpen: false,
+});
 
 onMounted(async () => {
   await activityStore.loadActivities();
@@ -20,7 +24,14 @@ onMounted(async () => {
   <v-app>
     <v-card height="100%" rounded="0">
       <v-layout full-height>
-        <CategoryBar />
+        <CategoryBar
+          :leftMenuPressSelected="state.managementPanelOpen"
+          @left-menu-press="
+            () => {
+              state.managementPanelOpen = !state.managementPanelOpen;
+            }
+          "
+        />
         <v-main class="do-view">
           <v-container fluid>
             <v-row>
