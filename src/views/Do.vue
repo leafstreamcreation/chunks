@@ -32,17 +32,24 @@ onMounted(async () => {
             }
           "
         />
+        <v-navigation-drawer
+          v-model="state.managementPanelOpen"
+          location="bottom"
+          disable-route-watcher
+        >
+          <ActivityManagementPanel />
+        </v-navigation-drawer>
         <v-main class="do-view">
-          <v-container fluid>
+          <ActivitySelectionView />
+          <!-- <v-container fluid>
+
             <v-row>
               <v-col cols="12">
-                <ActivitySelectionView />
               </v-col>
               <v-col cols="12">
-                <ActivityManagementPanel />
               </v-col>
             </v-row>
-          </v-container>
+          </v-container> -->
         </v-main>
       </v-layout>
     </v-card>

@@ -10,7 +10,6 @@ import { useActivityStore } from "../stores/activityStore";
 const activityStore = useActivityStore();
 
 const state = reactive({
-  editingActivities: false,
   nameInProgress: "",
   selectedId: null,
 });
@@ -51,16 +50,11 @@ async function updateActivity(id) {
   const activity = await activityStore.renameActivity(id, state.nameInProgress);
   if (activity) clearSelected();
 }
-
-function toggleEditing() {
-  state.editingActivities = !state.editingActivities;
-  clearSelected();
-}
 </script>
 
 <template>
-  <v-card class="management-panel" title="Manage" @click="toggleEditing">
-    <v-card v-if="state.editingActivities" class="new-activity text-div">
+  <v-card class="management-panel" title="Manage">
+    <v-card class="new-activity text-div">
       <v-text-field
         :model-value="state.selectedId ? '' : state.nameInProgress"
         label="New Activity"
@@ -70,7 +64,7 @@ function toggleEditing() {
       />
       <v-btn text="Add" @click.stop="createActivity" />
     </v-card>
-    <v-list v-if="state.editingActivities" class="activity-list">
+    <v-list class="activity-list">
       <v-list-item
         v-for="{ id, name } in activityStore.activitiesInView"
         :key="id"
