@@ -74,7 +74,11 @@ export const useActivityStore = defineStore("activities", () => {
     const data = await activityService(`create`, true, { name, group });
     if (!data) return loadActivities();
     const { activity } = data;
-    if (activity) activities.value[group].push(activity);
+    if (activity) {
+      activities.value[group].push(activity);
+      return true;
+    }
+    return false;
   }
 
   async function renameActivity(id, name) {
@@ -92,7 +96,9 @@ export const useActivityStore = defineStore("activities", () => {
         id === runningActivity.value.id
       )
         runningActivity.value.name = activity.name;
+      return true;
     }
+    return false;
   }
 
   async function addHistoryRecord() {
@@ -145,7 +151,9 @@ export const useActivityStore = defineStore("activities", () => {
       )
         runningActivity.value = {};
       activities.value[activity.group].splice(activityIndex, 1);
+      return true;
     }
+    return false;
   }
 
   return {

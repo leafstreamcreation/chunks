@@ -14,6 +14,7 @@ const activityStore = useActivityStore();
 const state = reactive({
   nameInProgress: "",
   selectedId: null,
+  creationOk: true,
 });
 
 watch(
@@ -41,7 +42,7 @@ async function deleteActivity(id) {
 }
 
 async function createActivity() {
-  await activityStore.createActivity(
+  state.creationOk = await activityStore.createActivity(
     state.nameInProgress,
     activityStore.activeCategory
   );
@@ -65,6 +66,7 @@ async function updateActivity(id) {
       />
       <v-btn
         :text="state.selectedId ? 'Rename' : 'Add'"
+        :color="state.creationOk ? '' : 'red'"
         @click.stop="
           () => {
             state.selectedId
