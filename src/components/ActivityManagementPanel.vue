@@ -6,6 +6,8 @@
 import { reactive, watch } from "vue";
 import { useActivityStore } from "../stores/activityStore";
 
+import { mdiMinusThick } from "@mdi/js";
+
 //and controls to edit and delete selected activities in the category
 const activityStore = useActivityStore();
 
@@ -47,22 +49,30 @@ async function createActivity() {
 }
 
 async function updateActivity(id) {
-  const activity = await activityStore.renameActivity(id, state.nameInProgress);
-  if (activity) clearSelected();
+  await activityStore.renameActivity(id, state.nameInProgress);
+  clearSelected();
 }
 </script>
 
 <template>
-  <v-card class="management-panel" title="Manage">
-    <v-card class="new-activity text-div">
+  <v-card class="management-panel" title="Manage" @click.stop="clearSelected">
+    <v-card class="new-activity text-v-card">
       <v-text-field
-        :model-value="state.selectedId ? '' : state.nameInProgress"
-        label="New Activity"
+        v-model="state.nameInProgress"
         bg-color="white"
         clearable
         @click.stop=""
       />
-      <v-btn text="Add" @click.stop="createActivity" />
+      <v-btn
+        :text="state.selectedId ? 'Rename' : 'Add'"
+        @click.stop="
+          () => {
+            state.selectedId
+              ? updateActivity(state.selectedId)
+              : createActivity();
+          }
+        "
+      />
     </v-card>
     <v-list class="activity-list">
       <v-list-item
@@ -70,12 +80,18 @@ async function updateActivity(id) {
         :key="id"
         class="list-item"
       >
-        <div v-if="state.selectedId === id" class="activity-index text-div">
-          <v-btn label="-" @click.stop="deleteActivity(id)" />
-          <v-text-field v-model="state.nameInProgress" @click.stop="" />
-          <v-btn label="Rename" @click.stop="updateActivity(id)" />
-        </div>
-        <p v-else @click.stop="selectActivity(id)">{{ name }}</p>
+        <v-card
+          :title="name"
+          @click.stop="
+            () => {
+              state.selectedId === id ? clearSelected() : selectActivity(id);
+            }
+          "
+        >
+          <template v-slot:append v-if="state.selectedId === id">
+            <v-btn :icon="mdiMinusThick" @click.stop="deleteActivity(id)" />
+          </template>
+        </v-card>
       </v-list-item>
     </v-list>
   </v-card>
@@ -116,21 +132,12 @@ async function updateActivity(id) {
 }
 
 .list-item {
-  height: 30px;
   background-color: #f6e27f;
-  display: flex;
-  justify-content: center;
 }
 
 h1,
 h3 {
   text-align: center;
   color: black;
-}
-
-.text-div {
-  height: 30px;
-  display: flex;
-  flex-direction: row;
 }
 </style>
