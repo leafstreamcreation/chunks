@@ -168,14 +168,22 @@ function selectActivity(id) {
       />
     </v-card>
     <v-card class="suggestions">
-      <v-btn
-        v-for="(activity, index) in suggestions"
-        :key="index"
-        @click="selectActivity(activity?.id)"
-        color="#f6e27f"
-        width="30%"
-        :text="activity?.name"
-      />
+      <v-container fluid>
+        <v-row>
+          <v-col
+            cols="12"
+            v-for="(activity, index) in suggestions"
+            :key="index"
+          >
+            <v-btn
+              @click="selectActivity(activity?.id)"
+              color="#f6e27f"
+              :text="activity?.name"
+              block
+            />
+          </v-col>
+        </v-row>
+      </v-container>
     </v-card>
   </v-card>
 </template>

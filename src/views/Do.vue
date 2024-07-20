@@ -41,15 +41,6 @@ onMounted(async () => {
         </v-navigation-drawer>
         <v-main class="do-view">
           <ActivitySelectionView />
-          <!-- <v-container fluid>
-
-            <v-row>
-              <v-col cols="12">
-              </v-col>
-              <v-col cols="12">
-              </v-col>
-            </v-row>
-          </v-container> -->
         </v-main>
       </v-layout>
     </v-card>
