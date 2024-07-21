@@ -17,16 +17,14 @@ import SelectedActivity from "./SelectedActivity.vue";
 import { useActivityStore } from "../stores/activityStore";
 
 import { mdiRefresh } from "@mdi/js";
-import { mdiArrowDownRightBold } from "@mdi/js";
-import { mdiChevronUp } from "@mdi/js";
-import { mdiChevronDown } from "@mdi/js";
+import { mdiChevronLeft } from "@mdi/js";
+import { mdiChevronRight } from "@mdi/js";
 import { mdiFilterVariant } from "@mdi/js";
 
 const activityStore = useActivityStore();
 
 const state = reactive({
   filter: "",
-  sortReversed: false,
   suggestionIndex: 0,
 });
 
@@ -48,25 +46,22 @@ const suggestions = computed(() => {
   ]).values();
 });
 
-function reverseOrder() {
-  state.sortReversed = !state.sortReversed;
-  if (filteredActivities.value.length > 1) {
-    const maxIndex = filteredActivities.value.length - 1;
-    state.suggestionIndex = maxIndex - state.suggestionIndex;
-  }
+function nextSuggestion() {
+  const maxIndex = filteredActivities.value.length - 1;
+  if (maxIndex > 0) {
+    if (state.suggestionIndex === maxIndex) state.suggestionIndex = 0;
+    else state.suggestionIndex += 1;
+  } else state.suggestionIndex = 0;
 }
 
-function nextSuggestion() {
-  if (filteredActivities.value.length < 2) state.suggestionIndex = 0;
-  if (state.sortReversed === true) {
-    state.suggestionIndex =
-      state.suggestionIndex > 0 ? state.suggestionIndex - 1 : 0;
-  } else {
-    const maxIndex = filteredActivities.value.length - 1;
-    state.suggestionIndex =
-      state.suggestionIndex < maxIndex ? state.suggestionIndex + 1 : maxIndex;
-  }
+function previousSuggestion() {
+  const maxIndex = filteredActivities.value.length - 1;
+  if (maxIndex > 0) {
+    if (state.suggestionIndex === 0) state.suggestionIndex = maxIndex;
+    else state.suggestionIndex -= 1;
+  } else state.suggestionIndex = 0;
 }
+
 watch(
   [() => activityStore.activitiesInView, () => activityStore.runningActivity],
   () => {
@@ -77,7 +72,6 @@ watch(
 function refreshSuggestions() {
   state.suggestionIndex = 0;
   state.filter = "";
-  state.sortReversed = false;
 }
 
 function orderByRandom(activities) {
@@ -138,8 +132,9 @@ function selectActivity(id) {
       <v-btn
         class="options-button"
         color="#f7f7ff"
-        :icon="state.sortReversed ? mdiChevronUp : mdiChevronDown"
-        @click="reverseOrder"
+        :icon="mdiRefresh"
+        @click="refreshSuggestions"
+        :disabled="state.suggestionIndex === 0"
       />
       <v-text-field
         :append-inner-icon="mdiFilterVariant"
@@ -149,21 +144,27 @@ function selectActivity(id) {
         clearable
         @click:clear="state.filter = ''"
       />
-      <v-btn
-        class="options-button"
-        color="#f7f7ff"
-        :icon="mdiRefresh"
-        @click="refreshSuggestions"
-        :disabled="state.sortReversed === false && state.suggestionIndex === 0"
-      />
-      <v-btn
-        class="options-button"
-        color="#f7f7ff"
-        :text="`${state.suggestionIndex + 1}/${filteredActivities.length}`"
-        :append-icon="mdiArrowDownRightBold"
-        :disabled="filteredActivities.length === 0"
-        @click="nextSuggestion"
-      />
+      <v-card
+        :title="`${state.suggestionIndex + 1}/${filteredActivities.length}`"
+      >
+        <template v-slot:prepend>
+          <v-btn
+            class="options-button"
+            color="#f7f7ff"
+            :icon="mdiChevronLeft"
+            @click="previousSuggestion"
+          />
+        </template>
+        <template v-slot:append>
+          <v-btn
+            class="options-button"
+            color="#f7f7ff"
+            :icon="mdiChevronRight"
+            :disabled="filteredActivities.length === 0"
+            @click="nextSuggestion"
+          />
+        </template>
+      </v-card>
     </v-card>
     <v-card class="suggestions">
       <v-container fluid>
