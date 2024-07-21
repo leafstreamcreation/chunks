@@ -1,5 +1,5 @@
 {
-  "name": "chunks",
+  "name": "sencillo-choice-manager",
   "version": "0.0.0",
   "scripts": {
     "dev": "vite --host",

@@ -154,16 +154,14 @@ function selectActivity(id) {
         color="#f7f7ff"
         :icon="mdiRefresh"
         @click="refreshSuggestions"
-        :disabled="state.suggestionIndex === 0"
+        :disabled="state.sortReversed === false && state.suggestionIndex === 0"
       />
       <v-btn
         class="options-button"
         color="#f7f7ff"
-        :icon="mdiArrowDownRightBold"
-        :disabled="
-          filteredActivities.length === 0 ||
-          state.suggestionIndex === filteredActivities.length - 1
-        "
+        :text="`${state.suggestionIndex + 1}/${filteredActivities.length}`"
+        :append-icon="mdiArrowDownRightBold"
+        :disabled="filteredActivities.length === 0"
         @click="nextSuggestion"
       />
     </v-card>
