@@ -63,7 +63,7 @@ function previousSuggestion() {
 }
 
 watch(
-  [() => activityStore.activitiesInView, () => activityStore.runningActivity],
+  () => activityStore.activitiesInView,
   () => {
     refreshSuggestions();
   }
