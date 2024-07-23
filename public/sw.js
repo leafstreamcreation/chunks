@@ -27,6 +27,10 @@ self.addEventListener("fetch", (event) => {
       event.respondWith(updateActivityHandler(id, event.request));
     } else if (url.endsWith("create")) {
       event.respondWith(createActivityHandler(event.request));
+    } else if (url.endsWith("login")) {
+      event.respondWith(loginHandler(event.request));
+    } else if (url.endsWith("logout")) {
+      event.respondWith(logoutHandler(event.request));
     } else console.log("CTD: Route does not exist");
   }
 
@@ -67,6 +71,17 @@ self.addEventListener("fetch", (event) => {
   async function deleteActivityHandler(id) {
     const deletedActivity = await db.deleteActivity(id);
     return Promise.resolve(response(200, { activity: deletedActivity }));
+  }
+
+  async function loginHandler(/*request*/) {
+    //is signup or login?
+    //send to backend
+    //forward respnse to client
+  }
+
+  async function logoutHandler() {
+    //send to backend?
+    //or just self destruct client
   }
 
   function response(status, data) {
