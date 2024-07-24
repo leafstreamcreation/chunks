@@ -6,6 +6,12 @@ const db = ODM(); // eslint-disable-line
 
 const BASE_URL_ACTIVITY = "https://localhost:5051/activity/";
 
+// const batchUpdate = [];
+
+//how to incorporate crypto now that crypto-js is deprecated?
+
+//how to load from the backend to service worker?
+
 self.addEventListener("install", (event) => {
   event.waitUntil(db.init());
 });
@@ -41,6 +47,7 @@ self.addEventListener("fetch", (event) => {
     if (!("group" in body))
       return Promise.resolve(response(400, { message: "group is required" }));
     const newActivity = await db.createActivity(body);
+    //prepare update to be sent to backend
     return Promise.resolve(response(200, { activity: newActivity }));
   }
 
@@ -65,23 +72,27 @@ self.addEventListener("fetch", (event) => {
     if (!(body.name || body.startDate || body.endDate))
       return Promise.resolve(response(400, { message: "name is required" }));
     const updatedActivity = await db.updateActivity(id, body);
+    //prepare update to be sent to backend
     return Promise.resolve(response(200, { activity: updatedActivity }));
   }
 
   async function deleteActivityHandler(id) {
     const deletedActivity = await db.deleteActivity(id);
+    //prepare update to be sent to backend
     return Promise.resolve(response(200, { activity: deletedActivity }));
   }
 
   async function loginHandler(/*request*/) {
     //is signup or login?
     //send to backend
-    //forward respnse to client
+    //begin batch update loop
+    //forward response to client
   }
 
   async function logoutHandler() {
-    //send to backend?
-    //or just self destruct client
+    await db.dropDB();
+    await db.init();
+    return Promise.resolve(response(200, { message: "cleared all user data" }));
   }
 
   function response(status, data) {
