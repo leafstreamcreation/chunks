@@ -6,7 +6,8 @@ const db = ODM(); // eslint-disable-line
 
 const BASE_URL_ACTIVITY = "https://localhost:5051/activity/";
 
-// const batchUpdate = [];
+const updatePool = [];
+let updateInterval;
 
 //how to incorporate crypto now that crypto-js is deprecated?
 
@@ -82,10 +83,19 @@ self.addEventListener("fetch", (event) => {
     return Promise.resolve(response(200, { activity: deletedActivity }));
   }
 
-  async function loginHandler(/*request*/) {
-    //is signup or login?
+  async function loginHandler(request) {
+    const body = await request.clone().json();
+    if (!("name" in body))
+      if (!("password" in body))
+        if ("ticket" in body) {
+          //is signup or login?
+          //call the signup route
+        } else {
+          //call the login route
+        }
     //send to backend
     //begin batch update loop
+    updateInterval = setInterval(exportUpdates, 1800000);
     //forward response to client
   }
 
@@ -94,6 +104,8 @@ self.addEventListener("fetch", (event) => {
     await db.init();
     return Promise.resolve(response(200, { message: "cleared all user data" }));
   }
+
+  async function exportUpdates() {}
 
   function response(status, data) {
     console.log("API: ", status, data);
