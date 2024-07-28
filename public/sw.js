@@ -5,6 +5,7 @@ const textEncoder = new TextEncoder();
 const db = ODM(); // eslint-disable-line
 
 const BASE_URL_ACTIVITY = "https://localhost:5051/activity/";
+const BASE_URL_BACKEND = "";
 
 const updatePool = [];
 let updateInterval;
@@ -85,13 +86,30 @@ self.addEventListener("fetch", (event) => {
 
   async function loginHandler(request) {
     const body = await request.clone().json();
+    const encoder = new TextEncoder();
+    const init = {
+      method: "POST",
+      body: encoder.encode(JSON.stringify(body))
+    };
     if (!("name" in body))
+      return Promise.resolve(response(400, { message: "name is required" }));
       if (!("password" in body))
+        return Promise.resolve(response(400, { message: "password is required" }));
         if ("ticket" in body) {
-          //is signup or login?
-          //call the signup route
+          const signupRoute = [BASE_URL_BACKEND, "/signup"].join();
+          const res = await fetch(signupRoute, init);
+          if (res) {
+            //signup ok; return signup success
+          }
+          else //signup bad; respond based on failure code 
         } else {
           //call the login route
+          const signupRoute = [BASE_URL_BACKEND, "/login"].join();
+          const res = await fetch(signupRoute, init);
+          if (res) {
+            //login ok; return login success
+          }
+          else //login bad; respond based on failure code 
         }
     //send to backend
     //begin batch update loop
