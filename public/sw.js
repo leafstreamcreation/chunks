@@ -89,28 +89,36 @@ self.addEventListener("fetch", (event) => {
     const encoder = new TextEncoder();
     const init = {
       method: "POST",
-      body: encoder.encode(JSON.stringify(body))
+      body: encoder.encode(JSON.stringify(body)),
     };
     if (!("name" in body))
       return Promise.resolve(response(400, { message: "name is required" }));
-      if (!("password" in body))
-        return Promise.resolve(response(400, { message: "password is required" }));
-        if ("ticket" in body) {
-          const signupRoute = [BASE_URL_BACKEND, "/signup"].join();
-          const res = await fetch(signupRoute, init);
-          if (res) {
-            //signup ok; return signup success
-          }
-          else //signup bad; respond based on failure code 
-        } else {
-          //call the login route
-          const signupRoute = [BASE_URL_BACKEND, "/login"].join();
-          const res = await fetch(signupRoute, init);
-          if (res) {
-            //login ok; return login success
-          }
-          else //login bad; respond based on failure code 
-        }
+    if (!("password" in body))
+      return Promise.resolve(
+        response(400, { message: "password is required" })
+      );
+    if ("ticket" in body) {
+      const signupRoute = [BASE_URL_BACKEND, "/signup"].join();
+      const res = await fetch(signupRoute, init);
+      //signup ok; return signup success
+      //gets token, activities, and update key
+      //signup bad; respond based on failure code
+      //server error
+      //invalid ticket
+      //missing ticket/credentials
+      //credentials taken (ticket refund)
+    } else {
+      //call the login route
+      const loginRoute = [BASE_URL_BACKEND, "/login"].join();
+      const res = await fetch(loginRoute, init);
+      //login ok; return login success
+      //gets token, activities, and update key
+      //login bad; respond based on failure code
+      //server error
+      //missing credentials
+      //invalid credentials
+      //expired login
+    }
     //send to backend
     //begin batch update loop
     updateInterval = setInterval(exportUpdates, 1800000);
