@@ -15,5 +15,6 @@ export default async function activityService(
   const res = await fetch(fullPath, init).catch((error) => {
     console.log(error);
   });
+  //add error handlers
   return res ? res.json() : null;
 }
