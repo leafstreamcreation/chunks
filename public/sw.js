@@ -100,29 +100,56 @@ self.addEventListener("fetch", (event) => {
     if ("ticket" in body) {
       const signupRoute = [BASE_URL_BACKEND, "/signup"].join();
       const res = await fetch(signupRoute, init);
+      //decrypt response
+
       //signup ok; return signup success
       //gets token, activities, and update key
+      //begin batch update loop
+      updateInterval = setInterval(exportUpdates, 1800000);
+      //forward response to client
       //signup bad; respond based on failure code
       //server error
+      if (res.status === 500)
+        return Promise.resolve(response(500, { message: "server error" }));
       //invalid ticket
+      if (res.status === 403) {
+        //is ticket refund or invalid ticket?
+        return Promise.resolve(response(403, { message: "invalid ticket" }));
+        // return Promise.resolve(response(403, { message: "ticket refund" }));
+      }
       //missing ticket/credentials
-      //credentials taken (ticket refund)
+      if (res.status === 400)
+        return Promise.resolve(
+          response(400, { message: "ticket, username, and password required" })
+        );
     } else {
       //call the login route
       const loginRoute = [BASE_URL_BACKEND, "/login"].join();
       const res = await fetch(loginRoute, init);
+      //decrypt response
       //login ok; return login success
       //gets token, activities, and update key
+      //begin batch update loop
+      updateInterval = setInterval(exportUpdates, 1800000);
+      //forward response to client
       //login bad; respond based on failure code
       //server error
+      if (res.status === 500)
+        return Promise.resolve(response(500, { message: "server error" }));
       //missing credentials
+      if (res.status === 400)
+        return Promise.resolve(
+          response(400, { message: "username and password required" })
+        );
       //invalid credentials
-      //expired login
+      if (res.status === 403) {
+        //is expired login or invalid credentials?
+        return Promise.resolve(
+          response(403, { message: "invalid credentials" })
+        );
+        // return Promise.resolve(response(403, { message: "expired login" }));
+      }
     }
-    //send to backend
-    //begin batch update loop
-    updateInterval = setInterval(exportUpdates, 1800000);
-    //forward response to client
   }
 
   async function logoutHandler() {
