@@ -103,11 +103,11 @@ self.addEventListener("fetch", (event) => {
 
       //signup ok; return signup success
       if (res.status === 200) {
-        //decrypt response
-        //gets token, activities, and update key
+        const data = await res.json();
         //begin batch update loop
         updateInterval = setInterval(exportUpdates, 1800000);
         //forward response to client
+        return Promise.resolve(response(200, data));
       }
       //signup bad; respond based on failure code
       //server error
@@ -131,11 +131,11 @@ self.addEventListener("fetch", (event) => {
       const res = await fetch(loginRoute, init);
       //login ok; return login success
       if (res.status === 200) {
-        //decrypt response
-        //gets token, activities, and update key
+        const data = await res.json();
         //begin batch update loop
         updateInterval = setInterval(exportUpdates, 1800000);
         //forward response to client
+        return Promise.resolve(response(200, data));
       }
       //login bad; respond based on failure code
       //server error
